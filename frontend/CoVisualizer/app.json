@@ -1,0 +1,12 @@
+{
+  "name": "CoVisualizer",
+  "displayName": "CoVisualizer",
+  "expo": {
+    "name": "CoVisualizer",
+    "slug": "CoVisualizer",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
