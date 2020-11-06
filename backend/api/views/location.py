@@ -8,7 +8,7 @@ from datetime import datetime
 location = Blueprint("location", __name__)
 
 
-@location.route("/location", methods=["GET"])
+@location.route("/get_location", methods=["POST"])
 def get_location():
     """
     get location based on net_id
@@ -95,11 +95,13 @@ def create_new_location():
     sql = """INSERT INTO location
              VALUES(%s, %s, %d, %s, %d);"""
     conn = None
+    items = None
     try:
         params = config()
         conn = psycopg2.connect(**params)
         cur = conn.cursor()
         cur.execute(sql, (coordinates, net_id, risk, location_name, time_spent))
+        items = cur.fetchone()
         conn.commit()
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
@@ -108,7 +110,8 @@ def create_new_location():
         if conn is not None:
             conn.close()
 
-    return create_response(status=200, message="successfully added new location")
+    output = {"id": items[0], "coordinates": items[1], "net_id": items[2], "risk": items[3], "location_name": items[4], "time_spent": items[5]}
+    return create_response(status=200, data=output, message="successfully added new location")
 
 @location.route("/location/<id>", methods=["DELETE"])
 def delete_location():

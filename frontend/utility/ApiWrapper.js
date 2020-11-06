@@ -5,7 +5,7 @@ export const login = (net_id) => {
     let data = new FormData()
     data.append('net_id', net_id)
     return axios
-      .get(BACKEND_URL + '/person', data)
+      .post(BACKEND_URL + '/create_person', data)
       .then(response => {
         return {
           type: 'LOGIN_SUCCESSFUL',
@@ -68,7 +68,7 @@ export const login = (net_id) => {
     data.append('coordinates', coordinates)
     data.append('net_id', net_id)
     return axios
-      .get(BACKEND_URL + '/location', data)
+      .post(BACKEND_URL + '/get_location', data)
       .then(response => {
         return {
           type: 'GET_SUCCESSFUL',

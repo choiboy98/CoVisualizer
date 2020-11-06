@@ -8,7 +8,7 @@ from datetime import datetime
 person = Blueprint("person", __name__)
 
 
-@person.route("/person", methods=["GET"])
+@person.route("/create_person", methods=["POST"])
 def get_person():
     """
     get person based on net_id
@@ -18,7 +18,6 @@ def get_person():
     if data is None:
         return create_response(status=400, message="No body provided for new person")
     net_id = data.get("net_id")
-
     sql = """SELECT * FROM person WHERE net_id = %s;"""
     conn = None
     items = None
@@ -35,7 +34,6 @@ def get_person():
     finally:
         if conn is not None:
             conn.close()
-
     output = {"net_id": items[0], "name": items[1], "email": items[2], "phone": items[3], "infected": items[4]}
 
     return create_response(
@@ -81,6 +79,7 @@ def create_new_person():
     create new person upon signing up
     """
     data = request.form
+    print(data)
     if data is None:
         return create_response(status=400, message="No body provided for new person")
     net_id = data.get("net_id")
