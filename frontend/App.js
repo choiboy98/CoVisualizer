@@ -1,28 +1,142 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity} from 'react-native';
-// import { LoginScreen } from 'login.js';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text style = {styles.initText}>Login to CoVisualizer!</Text>
-      <TextInput 
-        style = {styles.input}
-        placeholder = "Username"
-      />
-      <TextInput 
-        style = {styles.input}
-        placeholder = "Password"
-        secureTextEntry
-      />
-      <View style = {styles.btnContainer}>
-        <TouchableOpacity style = {styles.btns}><Text style = {styles.btnText}>Login</Text></TouchableOpacity>
-        <TouchableOpacity style = {styles.btns}><Text style = {styles.btnText}>Register</Text></TouchableOpacity>
+
+
+// hardcoded to start in UIUC
+const LATITUDE = 40.1020;
+const LONGITUDE = -88.2272;
+// the size of the region displayed
+const LAT_VIEW_DELTA = 0.009;
+const LNG_VIEW_DELTA = 0.009;
+
+// the delta before we update their position
+// CAN BE CHANGED WITH TESTING
+const LATITUDE_DELTA  = 0.0001;
+const LONGITUDE_DELTA = 0.0001;
+
+class Path extends React.Component {
+
+
+  // TODO if adding date, look into combining pastDuration, pastRoutes, and date into one array of objects
+  // isTracking: boolean to indicate whether to start isTracking or not
+  // routeCoordinates: array of coordinates the person has been to
+  // duration: array of ints the person has spent at the coordinates
+  // zip them together to combine
+  // start_duration: the time that the person entered a new coord
+  constructor(props) {
+   super(props);
+   this.state = {
+    mapRef: React.createRef(),
+    isTracking: false,
+    latitude: LATITUDE,
+    longitude: LONGITUDE,
+    routeCoordinates: [],
+    duration: [],
+    pastRoutes: [],
+    pastDuration: [],
+    start_duration: 0,
+   };
+  }
+
+
+  getMapRegion = () => ({
+   latitude: this.state.latitude,
+   longitude: this.state.longitude,
+   latitudeDelta: LAT_VIEW_DELTA,
+   longitudeDelta: LNG_VIEW_DELTA
+  });
+
+  setTracking = () => {
+    const { latitude, longitude, pastRoutes, routeCoordinates, duration, pastDuration, start_duration} = this.state;
+    console.log("easter egg");
+    // console.log(this.state)
+    curr_time = new Date().getTime()
+    if (!this.state.isTracking) {
+      this.setState({
+        isTracking: true,
+        routeCoordinates: [ {latitude, longitude } ],
+        start_duration: curr_time
+      });
+    } else {
+      this.setState({
+        isTracking: false,
+        routeCoordinates: [],
+        pastRoutes: pastRoutes.concat([routeCoordinates]),
+        duration: [],
+        pastDuration: pastDuration.concat([duration.concat([curr_time - start_duration])])
+      });
+    }
+  }
+
+  componentDidMount() {
+    navigator.geolocation.getCurrentPosition(
+      // only runs once
+      position => {
+        // console.log(this.state);
+        this.setState({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+      },
+      error => this.setState({ error: error.message }),
+        { enableHighAccuracy: true, timeout: 200000, maximumAge: 1000 }
+    );
+
+    navigator.geolocation.watchPosition(
+      position => {
+        const { latitude, longitude } = position.coords;
+        const { routeCoordinates, duration, start_duration} = this.state;
+
+        if ((Math.abs(latitude - this.state.latitude) > LATITUDE_DELTA || Math.abs(longitude - this.state.longitude) > LONGITUDE_DELTA)) {
+          const newCoordinate = {  latitude,  longitude  };
+          this.setState({
+            latitude,
+            longitude,
+          });
+          if (this.state.isTracking) {
+            curr_time = new Date().getTime();
+            this.setState({
+              routeCoordinates: routeCoordinates.concat([newCoordinate]),
+              duration: duration.concat([curr_time - start_duration]),
+              start_duration: curr_time
+            });
+          }
+        }
+
+      }
+    );
+  }
+
+  followUser = () => {
+    if (this.state.isTracking) {
+      // TODO make smooth
+      this.state.mapRef.current.animateToRegion(this.getMapRegion(), 1);
+    }
+  }
+
+  render() {
+
+
+    return (
+      <View style={styles.container}>
+        <MapView ref={this.state.mapRef} provider={PROVIDER_GOOGLE} style={{ ...StyleSheet.absoluteFillObject }} initialRegion={this.getMapRegion()}
+                        showsUserLocation={true} showsMyLocationButton={true} onUserLocationChange={this.followUser}>
+            { this.state.pastRoutes.map((prop, key) => {
+              return <Polyline key={key} coordinates={prop} strokeWidth={3} lineJoin={"miter"} tappable={true}
+                            strokeColor={ "red" }/>
+            })}
+            <Polyline coordinates={this.state.routeCoordinates} strokeWidth={5} lineJoin={"miter"} strokeColor={ "red" }/>
+        </MapView>
+
+        <TouchableOpacity style = {styles.toggleTrackingBtn} onPress={this.setTracking} >
+          <Text>{ this.state.isTracking ? "Turn Off Tracking" : "Turn On Tracking" }</Text>
+        </TouchableOpacity>
       </View>
-      <StatusBar style="auto" />
-    </View>
-  );
+    );  
+  }
 }
 
 const styles = StyleSheet.create({
@@ -32,7 +146,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  initText: {
+    initText: {
     fontSize: 28,
     textAlign: 'center',
     margin: 10,
@@ -59,4 +173,19 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: "center",
   },
+  toggleTrackingBtn : {
+    position: 'absolute',
+    right: 30,
+    top: 50,
+    paddingVertical: 8,
+    paddingHorizontal: 3,
+    borderWidth: 1,
+    borderColor: "black",
+    backgroundColor: "white",
+    fontSize: 30,
+    fontWeight: "bold"
+  }
 });
+
+
+export default Path;
