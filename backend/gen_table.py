@@ -37,9 +37,7 @@ def create_tables():
                     REFERENCES location (coordinates)
                     ON UPDATE CASCADE ON DELETE CASCADE
         )
-        """,
-        """
-        CREATE TABLE regions ()""")
+        """)
     conn = None
     try:
         # read the connection parameters
