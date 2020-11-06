@@ -24,15 +24,18 @@ class Path extends React.Component {
   // routeCoordinates: array of coordinates the person has been to
   // duration: array of ints the person has spent at the coordinates
   // zip them together to combine
+  // start_duration: the time that the person entered a new coord
   constructor(props) {
    super(props);
    this.state = {
     tracking: false,
     latitude: LATITUDE,
     longitude: LONGITUDE,
-    error: null,
     routeCoordinates: [],
+    duration: [],
     pastRoutes: [],
+    pastDuration: [],
+    start_duration: 0,
    };
   }
 
@@ -44,17 +47,22 @@ class Path extends React.Component {
   });
 
   setTracking = () => {
-    const { latitude, longitude, pastRoutes, routeCoordinates } = this.state;
+    const { latitude, longitude, pastRoutes, routeCoordinates, duration, pastDuration, start_duration} = this.state;
+    // console.log(this.state)
+    curr_time = new Date().getTime()
     if (!this.state.tracking) {
       this.setState({
         tracking: true,
         routeCoordinates: [ {latitude, longitude } ],
+        start_duration: curr_time
       });
     } else {
       this.setState({
         tracking: false,
         routeCoordinates: [],
-        pastRoutes: pastRoutes.concat([routeCoordinates])
+        pastRoutes: pastRoutes.concat([routeCoordinates]),
+        duration: [],
+        pastDuration: pastDuration.concat([duration.concat([curr_time - start_duration])])
       });
     }
   }
@@ -67,7 +75,6 @@ class Path extends React.Component {
         this.setState({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
-          error: null
         });
       },
       error => this.setState({ error: error.message }),
@@ -77,7 +84,7 @@ class Path extends React.Component {
     navigator.geolocation.watchPosition(
       position => {
         const { latitude, longitude } = position.coords;
-        const { routeCoordinates } = this.state;
+        const { routeCoordinates, duration, start_duration} = this.state;
 
         if ((Math.abs(latitude - this.state.latitude) > LATITUDE_DELTA || Math.abs(longitude - this.state.longitude) > LONGITUDE_DELTA)) {
           const newCoordinate = {  latitude,  longitude  };
@@ -86,8 +93,11 @@ class Path extends React.Component {
             longitude,
           });
           if (this.state.tracking) {
+            curr_time = new Date().getTime();
             this.setState({
-              routeCoordinates: routeCoordinates.concat([newCoordinate])
+              routeCoordinates: routeCoordinates.concat([newCoordinate]),
+              duration: duration.concat([curr_time - start_duration]),
+              start_duration: curr_time
             });
           }
         }
@@ -101,9 +111,10 @@ class Path extends React.Component {
       <View style={styles.container}>
         <MapView provider={PROVIDER_GOOGLE} style={{ ...StyleSheet.absoluteFillObject }} region={this.getMapRegion()}>
             { this.state.pastRoutes.map((prop, key) => {
-              return <Polyline key={key} coordinates={prop} strokeWidth={2} />
+              return <Polyline key={key} coordinates={prop} strokeWidth={3} lineJoin={"miter"} tappable={true}
+                            strokeColor={ "red" }/>
             })}
-            <Polyline coordinates={this.state.routeCoordinates} strokeWidth={5} />
+            <Polyline coordinates={this.state.routeCoordinates} strokeWidth={5} lineJoin={"miter"} strokeColor={ "red" }/>
             <Marker coordinate={this.getMapRegion()} />
         </MapView>
 
