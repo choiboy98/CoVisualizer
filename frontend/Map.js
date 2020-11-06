@@ -17,7 +17,7 @@ const LNG_VIEW_DELTA = 0.009;
 const LATITUDE_DELTA  = 0.0001;
 const LONGITUDE_DELTA = 0.0001;
 
-class Path extends React.Component {
+class Map extends React.Component {
 
 
   // TODO if adding date, look into combining pastDuration, pastRoutes, and date into one array of objects
@@ -188,4 +188,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default Path;
+export default Map;
