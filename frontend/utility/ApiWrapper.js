@@ -62,9 +62,11 @@ export const login = (net_id) => {
       })
   }
 
-  export const getLocation = (coordinates) => {
+  export const getLocation = (id, coordinates, net_id) => {
     let data = new FormData()
+    data.append('id', id)
     data.append('coordinates', coordinates)
+    data.append('net_id', net_id)
     return axios
       .get(BACKEND_URL + '/location', data)
       .then(response => {
@@ -123,11 +125,12 @@ export const login = (net_id) => {
       })
   }
 
-  export const deleteLocation = (coordinates, net_id) => {
+  export const deleteLocation = (id, coordinates, net_id) => {
     let data = new FormData()
+    data.append('coordinates', coordinates)
     data.append('net_id', net_id)
     return axios
-      .post(BACKEND_URL + '/location/' + coordinates, data)
+      .post(BACKEND_URL + '/location/' + id, data)
       .then(response => {
         return {
           type: 'DELETE_SUCCESSFUL',
