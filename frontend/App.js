@@ -51,6 +51,7 @@ class Path extends React.Component {
 
   setTracking = () => {
     const { latitude, longitude, pastRoutes, routeCoordinates, duration, pastDuration, start_duration} = this.state;
+    console.log("easter egg");
     // console.log(this.state)
     curr_time = new Date().getTime()
     if (!this.state.isTracking) {
