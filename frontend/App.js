@@ -142,9 +142,36 @@ class Path extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#E84A27',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+    initText: {
+    fontSize: 28,
+    textAlign: 'center',
+    margin: 10,
+    color: "#fff",
+  },
+  input: {
+    width: "85%",
+    backgroundColor: "#fff",
+    padding: 10,
+    marginBottom: 10,
+  },
+  btnContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "80%",
+  },
+  btns: {
+    backgroundColor: "#13294B",
+    padding: 15,
+    width: "45%",
+  },
+  btnText: {
+    color: "#fff",
+    fontSize: 20,
+    textAlign: "center",
   },
   toggleTrackingBtn : {
     position: 'absolute',
