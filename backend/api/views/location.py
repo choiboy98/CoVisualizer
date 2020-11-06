@@ -18,15 +18,17 @@ def get_location():
 
     if data is None:
         return create_response(status=400, message="No body provided for person")
+    id = data.get("id")
     coordinates = data.get("coordinates")
-    
-    sql = """SELECT * FROM location WHERE coordinates=%s;"""
+    net_id = data.get("net_id")
+
+    sql = """SELECT * FROM location WHERE id = %s AND coordinates=%s AND net_id = %s;"""
     conn = None
     try:
         params = config()
         conn = psycopg2.connect(**params)
         cur = conn.cursor()
-        cur.execute(sql, (coordinates,))
+        cur.execute(sql, (id, coordinates, net_id))
         items = cur.fetchone()
         conn.commit()
         cur.close()
@@ -36,7 +38,7 @@ def get_location():
         if conn is not None:
             conn.close()
 
-    output = {"coordinates": items[0], "net_id": items[1], "risk": items[2], "location_name": items[3], "time_spent": items[4]}
+    output = {"id": items[0], "coordinates": items[1], "net_id": items[2], "risk": items[3], "location_name": items[4], "time_spent": items[5]}
 
     return create_response(
         status=200,
@@ -120,13 +122,13 @@ def delete_location():
 
     coordinates = data.get("coordinates")
     net_id = data.get("net_id")
-    sql = """DELETE FROM location WHERE coordinates = %s AND net_id = %s;"""
+    sql = """DELETE FROM location WHERE id = %s AND coordinates = %s AND net_id = %s;"""
     conn = None
     try:
         params = config()
         conn = psycopg2.connect(**params)
         cur = conn.cursor()
-        cur.execute(sql, (coordinates, net_id))
+        cur.execute(sql, (id, coordinates, net_id))
         conn.commit()
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
