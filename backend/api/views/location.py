@@ -27,7 +27,8 @@ def get_location():
         conn = psycopg2.connect(**params)
         cur = conn.cursor()
         cur.execute(sql, (coordinates,))
-        items = cur.fetchall()
+        items = cur.fetchone()
+        conn.commit()
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
         return create_response(status=500, message=error)
@@ -35,9 +36,11 @@ def get_location():
         if conn is not None:
             conn.close()
 
+    output = {"coordinates": items[0], "net_id": items[1], "risk": items[2], "location_name": items[3], "time_spent": items[4]}
+
     return create_response(
         status=200,
-        data={items},
+        data=output,
     )
 
 

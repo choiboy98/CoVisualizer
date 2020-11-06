@@ -21,13 +21,14 @@ def get_person():
 
     sql = """SELECT * FROM person WHERE net_id = %s;"""
     conn = None
+    items = None
     try:
         params = config()
         conn = psycopg2.connect(**params)
         cur = conn.cursor()
-        cur.execute(sql, (net_id))
-        print("save me")
-        items = cur.fetchall()
+        cur.execute(sql, (net_id,))
+        items = cur.fetchone()
+        conn.commit()
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
         return create_response(status=500, message=error)
@@ -35,9 +36,11 @@ def get_person():
         if conn is not None:
             conn.close()
 
+    output = {"net_id": items[0], "name": items[1], "email": items[2], "phone": items[3], "infected": items[4]}
+
     return create_response(
         status=200,
-        data={items},
+        data=output,
     )
 
 
