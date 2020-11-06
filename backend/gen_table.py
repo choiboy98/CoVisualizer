@@ -17,8 +17,8 @@ def create_tables():
         """ 
         CREATE TABLE location (
             id SERIAL PRIMARY KEY,
-            coordinates VARCHAR(255),
-            net_id VARCHAR(255) NOT NULL,
+            coordinates VARCHAR(255) UNIQUE,
+            net_id VARCHAR(255) NOT NULL UNIQUE,
             risk VARCHAR(255) NOT NULL,
             location_name VARCHAR(255) NOT NULL,
             time_spent FLOAT NOT NULL,
