@@ -21,7 +21,7 @@ def create_tables():
             net_id VARCHAR(255) NOT NULL UNIQUE,
             risk VARCHAR(255) NOT NULL,
             location_name VARCHAR(255) NOT NULL,
-            time_spent FLOAT NOT NULL,
+            time_spent VARCHAR(255) NOT NULL,
             FOREIGN KEY (net_id)
                 REFERENCES person (net_id)
                 ON UPDATE CASCADE ON DELETE CASCADE
