@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View, Button, } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 
 
@@ -51,7 +51,7 @@ class Path extends React.Component {
 
   setTracking = () => {
     const { latitude, longitude, pastRoutes, routeCoordinates, duration, pastDuration, start_duration} = this.state;
-    console.log(this.state)
+    // console.log(this.state)
     curr_time = new Date().getTime()
     if (!this.state.isTracking) {
       this.setState({
@@ -130,9 +130,9 @@ class Path extends React.Component {
             <Polyline coordinates={this.state.routeCoordinates} strokeWidth={5} lineJoin={"miter"} strokeColor={ "red" }/>
         </MapView>
 
-        <Button 
-          title="Toggle Tracking"
-          onPress={ this.setTracking }/>
+        <TouchableOpacity style = {styles.toggleTrackingBtn} onPress={this.setTracking} >
+          <Text>{ this.state.isTracking ? "Turn Off Tracking" : "Turn On Tracking" }</Text>
+        </TouchableOpacity>
       </View>
     );  
   }
@@ -145,6 +145,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  toggleTrackingBtn : {
+    position: 'absolute',
+    right: 30,
+    top: 50,
+    paddingVertical: 8,
+    paddingHorizontal: 3,
+    borderWidth: 1,
+    borderColor: "black",
+    backgroundColor: "white",
+    fontSize: 30,
+    fontWeight: "bold"
+  }
 });
 
 
