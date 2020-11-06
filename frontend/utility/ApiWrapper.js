@@ -27,6 +27,7 @@ export const login = (net_id) => {
     data.append('email', email)
     data.append('phone', phone)
     data.append('infected', infected)
+    console.log(data)
     return axios
       .post(BACKEND_URL + '/person', data)
       .then(response => {

@@ -81,6 +81,7 @@ def create_new_person():
     create new person upon signing up
     """
     data = request.form
+    print(data)
     if data is None:
         return create_response(status=400, message="No body provided for new person")
     net_id = data.get("net_id")
