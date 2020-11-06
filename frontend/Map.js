@@ -43,22 +43,21 @@ class Map extends React.Component {
 
 
   getMapRegion = () => ({
-   latitude: this.state.latitude,
-   longitude: this.state.longitude,
-   latitudeDelta: LAT_VIEW_DELTA,
-   longitudeDelta: LNG_VIEW_DELTA
+    latitude: this.state.latitude,
+    longitude: this.state.longitude,
+    latitudeDelta: LAT_VIEW_DELTA,
+    longitudeDelta: LNG_VIEW_DELTA
   });
 
   setTracking = () => {
     const { latitude, longitude, pastRoutes, routeCoordinates, duration, pastDuration, start_duration} = this.state;
     console.log("easter egg");
     // console.log(this.state)
-    curr_time = new Date().getTime()
     if (!this.state.isTracking) {
       this.setState({
         isTracking: true,
         routeCoordinates: [ {latitude, longitude } ],
-        start_duration: curr_time
+        start_duration: new Date().getTime()
       });
     } else {
       this.setState({
@@ -66,7 +65,7 @@ class Map extends React.Component {
         routeCoordinates: [],
         pastRoutes: pastRoutes.concat([routeCoordinates]),
         duration: [],
-        pastDuration: pastDuration.concat([duration.concat([curr_time - start_duration])])
+        pastDuration: pastDuration.concat([duration.concat([new Date().getTime() - start_duration])])
       });
     }
   }
@@ -145,33 +144,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#E84A27',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-    initText: {
-    fontSize: 28,
-    textAlign: 'center',
-    margin: 10,
-    color: "#fff",
-  },
-  input: {
-    width: "85%",
-    backgroundColor: "#fff",
-    padding: 10,
-    marginBottom: 10,
-  },
-  btnContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "80%",
-  },
-  btns: {
-    backgroundColor: "#13294B",
-    padding: 15,
-    width: "45%",
-  },
-  btnText: {
-    color: "#fff",
-    fontSize: 20,
-    textAlign: "center",
   },
   toggleTrackingBtn : {
     position: 'absolute',
