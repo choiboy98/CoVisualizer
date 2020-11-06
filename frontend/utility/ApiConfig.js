@@ -1,5 +1,5 @@
 let backend_url
 
-backend_url = 'https://21788781d825.ngrok.io'
+backend_url = 'http://b9e8e0d07b54.ngrok.io'
 
 export default backend_url
