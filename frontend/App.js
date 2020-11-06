@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import { StyleSheet, Text, View, Button, } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 
 
@@ -20,7 +20,8 @@ const LONGITUDE_DELTA = 0.0001;
 class Path extends React.Component {
 
 
-  // tracking: boolean to indicate whether to start tracking or not
+  // TODO if adding date, look into combining pastDuration, pastRoutes, and date into one array of objects
+  // isTracking: boolean to indicate whether to start isTracking or not
   // routeCoordinates: array of coordinates the person has been to
   // duration: array of ints the person has spent at the coordinates
   // zip them together to combine
@@ -28,7 +29,8 @@ class Path extends React.Component {
   constructor(props) {
    super(props);
    this.state = {
-    tracking: false,
+    mapRef: React.createRef(),
+    isTracking: false,
     latitude: LATITUDE,
     longitude: LONGITUDE,
     routeCoordinates: [],
@@ -39,6 +41,7 @@ class Path extends React.Component {
    };
   }
 
+
   getMapRegion = () => ({
    latitude: this.state.latitude,
    longitude: this.state.longitude,
@@ -48,17 +51,17 @@ class Path extends React.Component {
 
   setTracking = () => {
     const { latitude, longitude, pastRoutes, routeCoordinates, duration, pastDuration, start_duration} = this.state;
-    // console.log(this.state)
+    console.log(this.state)
     curr_time = new Date().getTime()
-    if (!this.state.tracking) {
+    if (!this.state.isTracking) {
       this.setState({
-        tracking: true,
+        isTracking: true,
         routeCoordinates: [ {latitude, longitude } ],
         start_duration: curr_time
       });
     } else {
       this.setState({
-        tracking: false,
+        isTracking: false,
         routeCoordinates: [],
         pastRoutes: pastRoutes.concat([routeCoordinates]),
         duration: [],
@@ -92,7 +95,7 @@ class Path extends React.Component {
             latitude,
             longitude,
           });
-          if (this.state.tracking) {
+          if (this.state.isTracking) {
             curr_time = new Date().getTime();
             this.setState({
               routeCoordinates: routeCoordinates.concat([newCoordinate]),
@@ -106,16 +109,25 @@ class Path extends React.Component {
     );
   }
 
+  followUser = () => {
+    if (this.state.isTracking) {
+      // TODO make smooth
+      this.state.mapRef.current.animateToRegion(this.getMapRegion(), 1);
+    }
+  }
+
   render() {
+
+
     return (
       <View style={styles.container}>
-        <MapView provider={PROVIDER_GOOGLE} style={{ ...StyleSheet.absoluteFillObject }} region={this.getMapRegion()}>
+        <MapView ref={this.state.mapRef} provider={PROVIDER_GOOGLE} style={{ ...StyleSheet.absoluteFillObject }} initialRegion={this.getMapRegion()}
+                        showsUserLocation={true} showsMyLocationButton={true} onUserLocationChange={this.followUser}>
             { this.state.pastRoutes.map((prop, key) => {
               return <Polyline key={key} coordinates={prop} strokeWidth={3} lineJoin={"miter"} tappable={true}
                             strokeColor={ "red" }/>
             })}
             <Polyline coordinates={this.state.routeCoordinates} strokeWidth={5} lineJoin={"miter"} strokeColor={ "red" }/>
-            <Marker coordinate={this.getMapRegion()} />
         </MapView>
 
         <Button 
