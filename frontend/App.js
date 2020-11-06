@@ -32,7 +32,7 @@ class Path extends React.Component {
     longitude: LONGITUDE,
     error: null,
     routeCoordinates: [],
-    duration: []
+    pastRoutes: [],
    };
   }
 
@@ -44,13 +44,19 @@ class Path extends React.Component {
   });
 
   setTracking = () => {
-    console.log(this.state);
-    const { latitude, longitude } = this.state;
-    this.setState({
-      tracking: true,
-      routeCoordinates: [ {latitude, longitude } ],
-      duration: []
-    });
+    const { latitude, longitude, pastRoutes, routeCoordinates } = this.state;
+    if (!this.state.tracking) {
+      this.setState({
+        tracking: true,
+        routeCoordinates: [ {latitude, longitude } ],
+      });
+    } else {
+      this.setState({
+        tracking: false,
+        routeCoordinates: [],
+        pastRoutes: pastRoutes.concat([routeCoordinates])
+      });
+    }
   }
 
   componentDidMount() {
@@ -94,12 +100,15 @@ class Path extends React.Component {
     return (
       <View style={styles.container}>
         <MapView provider={PROVIDER_GOOGLE} style={{ ...StyleSheet.absoluteFillObject }} region={this.getMapRegion()}>
+            { this.state.pastRoutes.map((prop, key) => {
+              return <Polyline key={key} coordinates={prop} strokeWidth={2} />
+            })}
             <Polyline coordinates={this.state.routeCoordinates} strokeWidth={5} />
             <Marker coordinate={this.getMapRegion()} />
         </MapView>
 
         <Button 
-          title="Start Tracking"
+          title="Toggle Tracking"
           onPress={ this.setTracking }/>
       </View>
     );  
