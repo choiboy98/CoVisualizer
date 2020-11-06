@@ -65,24 +65,13 @@ def create_app(test_config=None):
     root = logging.getLogger("core")
     root.addHandler(strm)
 
-    # decide whether to create database
-    if env != "prod":
-        db_url = app.config["SQLALCHEMY_DATABASE_URI"]
-        if not database_exists(db_url):
-            create_database(db_url)
-
-    # register sqlalchemy to this app
-    from api.models import db
-
-    db.init_app(app)  # initialize Flask SQLALchemy with this flask app
-    Migrate(app, db)
-
     # import and register blueprints
-    from api.views import main
+    from api.views import main, person, location
 
     # why blueprints http://flask.pocoo.org/docs/1.0/blueprints/
     app.register_blueprint(main.main)
-
+    app.register_blueprint(person.person)
+    app.register_blueprint(location.location)
     # register error Handler
     app.register_error_handler(Exception, all_exception_handler)
 
