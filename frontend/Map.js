@@ -1,7 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Modal } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
+import { createLocation } from './utility/ApiWrapper';
 
 
 
@@ -36,8 +37,9 @@ class Map extends React.Component {
     routeCoordinates: [],
     duration: [],
     pastRoutes: [],
-    pastDuration: [],
     start_duration: 0,
+    modalVisible: false,
+    selectedPath: -1
    };
   }
 
@@ -49,7 +51,7 @@ class Map extends React.Component {
     longitudeDelta: LNG_VIEW_DELTA
   });
 
-  setTracking = () => {
+  setTracking = async () => {
     const { latitude, longitude, pastRoutes, routeCoordinates, duration, pastDuration, start_duration} = this.state;
     console.log("easter egg");
     // console.log(this.state)
@@ -60,12 +62,27 @@ class Map extends React.Component {
         start_duration: new Date().getTime()
       });
     } else {
+      // add to database here
+      allCoord = routeCoordinates.map(coord => {
+        return coord.latitude + "," + coord.longitude;
+      }).join("|");
+      allDurations = duration.concat([new Date().getTime() - start_duration]).join("|");
+      // console.log("sending call");
+      // response = await createLocation(
+      //             allCoord,
+      //             "placeholder",
+      //             "unknown",
+      //             "----",
+      //             allDurations);
+      // console.log(response);
+
+      // adding to past Routes state TODO MAY REMOVE ONCE DATABASE IS DONE
       this.setState({
         isTracking: false,
         routeCoordinates: [],
-        pastRoutes: pastRoutes.concat([routeCoordinates]),
-        duration: [],
-        pastDuration: pastDuration.concat([duration.concat([new Date().getTime() - start_duration])])
+        pastRoutes: pastRoutes.concat([{"route" : routeCoordinates, 
+                                        "duration" : duration.concat([new Date().getTime() - start_duration])}]),
+        duration: []
       });
     }
   }
@@ -116,19 +133,52 @@ class Map extends React.Component {
     }
   }
 
+  pressPath = (id) => {
+    this.setState({
+      modalVisible : true,
+      selectedPath: id
+    });
+  }
+
+  deletePath = () => {
+    // TODO add delete path from database here
+    const { pastRoutes, selectedPath } = this.state;
+    pastRoutes.splice(selectedPath, 1)
+    this.setState({
+      modalVisible : false,
+      selectedPath: -1,
+      pastRoutes: pastRoutes
+    });
+  }
+
+  drawPath = () => {
+    if (this.state.routeCoordinates.length != 0) {
+      return <Polyline coordinates={this.state.routeCoordinates} strokeWidth={5} lineJoin={"miter"} strokeColor={ "red" }/>;
+    }
+  }
+
   render() {
-
-
     return (
       <View style={styles.container}>
+
+        <Modal animationType="fade" transparent={true} visible={this.state.modalVisible} >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <TouchableOpacity style = {styles.deleteBtn} onPress={this.deletePath} >
+                <Text> Delete Path </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
         <MapView ref={this.state.mapRef} provider={PROVIDER_GOOGLE} style={{ ...StyleSheet.absoluteFillObject }} initialRegion={this.getMapRegion()}
                         showsUserLocation={true} showsMyLocationButton={true} onUserLocationChange={this.followUser}>
-            { this.state.pastRoutes.map((prop, key) => {
-              return <Polyline key={key} coordinates={prop} strokeWidth={3} lineJoin={"miter"} tappable={true}
-                            strokeColor={ "red" }/>
+            { this.state.pastRoutes.map((prop, id) => {
+              return <Polyline key={id} coordinates={prop["route"]} strokeWidth={3} lineJoin={"miter"} tappable={ true }
+                            strokeColor={ "red" } onPress={ () => this.pressPath(id) }/>
             })}
-            <Polyline coordinates={this.state.routeCoordinates} strokeWidth={5} lineJoin={"miter"} strokeColor={ "red" }/>
+            { this.drawPath() }
         </MapView>
+
 
         <TouchableOpacity style = {styles.toggleTrackingBtn} onPress={this.setTracking} >
           <Text>{ this.state.isTracking ? "Turn Off Tracking" : "Turn On Tracking" }</Text>
@@ -156,6 +206,35 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     fontSize: 30,
     fontWeight: "bold"
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5
+  },
+  deleteBtn: {
+    borderWidth: 1,
+    borderColor: "black",
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2
   }
 });
 
