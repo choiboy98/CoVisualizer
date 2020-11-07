@@ -125,12 +125,11 @@ export const login = (net_id) => {
       })
   }
 
-  export const deleteLocation = (id, coordinates, net_id) => {
+  export const deleteLocation = (coordinates, net_id) => {
     let data = new FormData()
     data.append('coordinates', coordinates)
-    data.append('net_id', net_id)
     return axios
-      .post(BACKEND_URL + '/location/' + id, data)
+      .delete(BACKEND_URL + '/location/' + net_id, data)
       .then(response => {
         return {
           type: 'DELETE_SUCCESSFUL',
