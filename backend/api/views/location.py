@@ -46,7 +46,7 @@ def get_location():
 
 
 @location.route("/location/<coordinates>", methods=["PUT"])
-def update_location(id):
+def update_location(coordinates):
     """
     update infected status for specified location
     """
@@ -99,6 +99,7 @@ def create_new_location():
         params = config()
         conn = psycopg2.connect(**params)
         cur = conn.cursor()
+        print(data)
         cur.execute(sql, data)
         # items = cur.fetchone()
         conn.commit()
@@ -112,8 +113,8 @@ def create_new_location():
     # output = {"id": items[0], "coordinates": items[1], "net_id": items[2], "risk": items[3], "location_name": items[4], "time_spent": items[5]}
     return create_response(status=200, message="successfully added new location")
 
-@location.route("/location/${id}", methods=["DELETE"])
-def delete_location():
+@location.route("/location/<id>", methods=["DELETE"])
+def delete_location(id):
     """
     create new location upon finish tracking
     """
