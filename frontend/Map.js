@@ -2,6 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Modal } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
+import { CommonActions } from '@react-navigation/native';
 import { createLocation, deleteLocation } from './utility/ApiWrapper';
 
 
@@ -43,6 +44,8 @@ class Map extends React.Component {
     modalVisible: false,
     selectedPath: -1
    };
+
+   this.goToUser = this.goToUser.bind(this)
   }
 
 
@@ -134,6 +137,15 @@ class Map extends React.Component {
     }
   }
 
+  goToUser() {
+    this.props.navigation.dispatch(
+      CommonActions.navigate({
+        name: 'User',
+      })
+    )
+  }
+
+  render() {
   pressPath = (id) => {
     this.setState({
       modalVisible : true,
@@ -193,6 +205,10 @@ class Map extends React.Component {
         <TouchableOpacity style = {styles.toggleTrackingBtn} onPress={this.setTracking} >
           <Text>{ this.state.isTracking ? "Turn Off Tracking" : "Turn On Tracking" }</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity style = {styles.toggleUserBtn} onPress={this.goToUser } >
+          <Text>User</Text>
+        </TouchableOpacity>
       </View>
     );  
   }
@@ -208,6 +224,18 @@ const styles = StyleSheet.create({
   toggleTrackingBtn : {
     position: 'absolute',
     right: 30,
+    top: 50,
+    paddingVertical: 8,
+    paddingHorizontal: 3,
+    borderWidth: 1,
+    borderColor: "black",
+    backgroundColor: "white",
+    fontSize: 30,
+    fontWeight: "bold"
+  },
+  toggleUserBtn : {
+    position: 'absolute',
+    left: 30,
     top: 50,
     paddingVertical: 8,
     paddingHorizontal: 3,

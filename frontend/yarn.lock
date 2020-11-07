@@ -4661,7 +4661,7 @@
   dependencies:
     "asap" "~2.0.6"
 
-"prop-types@^15.0 || ^16.0", "prop-types@^15.6.0", "prop-types@^15.6.2", "prop-types@^15.7.2":
+"prop-types@^15.0 || ^16.0", "prop-types@^15.5.7", "prop-types@^15.6.0", "prop-types@^15.6.2", "prop-types@^15.7.2":
   "integrity" "sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ=="
   "resolved" "https://registry.npmjs.org/prop-types/-/prop-types-15.7.2.tgz"
   "version" "15.7.2"
@@ -4782,7 +4782,7 @@
     "prop-types" "^15.6.0"
     "react-timer-mixin" "^0.13.4"
 
-"react-native@*", "react-native@>= 0.51", "react-native@>=0.42.0", "react-native@>=0.57", "react-native@>=0.62.0-rc.0 <0.64.0", "react-native@https://github.com/expo/react-native/archive/sdk-39.0.4.tar.gz":
+"react-native@*", "react-native@>= 0.51", "react-native@>=0.42.0", "react-native@>=0.47.1", "react-native@>=0.57", "react-native@>=0.62.0-rc.0 <0.64.0", "react-native@https://github.com/expo/react-native/archive/sdk-39.0.4.tar.gz":
   "integrity" "sha512-SHhcKW3LF+6Lx8zEbFNeWEuLKcSLv3seeKhEctdfl8Ey19HWdCzQMlDDKhFELBeyLFjrzhpvl4jVTM4h/Sw+YQ=="
   "resolved" "https://github.com/expo/react-native/archive/sdk-39.0.4.tar.gz"
   "version" "0.63.2"
@@ -5546,6 +5546,13 @@
     "extend-shallow" "^3.0.2"
     "regex-not" "^1.0.2"
     "safe-regex" "^1.1.0"
+
+"toggle-switch-react-native@^2.3.0":
+  "integrity" "sha512-sq5r0Yu7GEwHTVFmL0HOOmliYX7edT1DTS8Zq9R927JaVnWeU5z6+TM5nxU190JkpeACCQVXyioDM/C1GdRitA=="
+  "resolved" "https://registry.npmjs.org/toggle-switch-react-native/-/toggle-switch-react-native-2.3.0.tgz"
+  "version" "2.3.0"
+  dependencies:
+    "prop-types" "^15.5.7"
 
 "toidentifier@1.0.0":
   "integrity" "sha512-yaOH/Pk/VEhBWWTlhI+qXxDFXlejDGcQipMlyxda9nthulaxLZUNcUqFxokp0vcYnvteJln5FNQDRrxj3YcbVw=="
