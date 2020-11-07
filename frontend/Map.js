@@ -2,8 +2,10 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Modal } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
-import { createLocation } from './utility/ApiWrapper';
+import { createLocation, deleteLocation } from './utility/ApiWrapper';
 
+
+const HARDCODED_NETID = "Test"
 
 
 // hardcoded to start in UIUC
@@ -67,16 +69,16 @@ class Map extends React.Component {
         return coord.latitude + "," + coord.longitude;
       }).join("|");
       allDurations = duration.concat([new Date().getTime() - start_duration]).join("|");
-      // console.log("sending call");
-      // response = await createLocation(
-      //             allCoord,
-      //             "placeholder",
-      //             "unknown",
-      //             "----",
-      //             allDurations);
-      // console.log(response);
+
+      response = await createLocation(
+                  allCoord,
+                  HARDCODED_NETID,
+                  "unknown",
+                  "----",
+                  allDurations);
 
       // adding to past Routes state TODO MAY REMOVE ONCE DATABASE IS DONE
+
       this.setState({
         isTracking: false,
         routeCoordinates: [],
@@ -113,11 +115,10 @@ class Map extends React.Component {
             longitude,
           });
           if (this.state.isTracking) {
-            curr_time = new Date().getTime();
             this.setState({
               routeCoordinates: routeCoordinates.concat([newCoordinate]),
-              duration: duration.concat([curr_time - start_duration]),
-              start_duration: curr_time
+              duration: duration.concat([new Date().getTime() - start_duration]),
+              start_duration: new Date().getTime()
             });
           }
         }
@@ -140,10 +141,17 @@ class Map extends React.Component {
     });
   }
 
-  deletePath = () => {
+  deletePath = async () => {
     // TODO add delete path from database here
     const { pastRoutes, selectedPath } = this.state;
-    pastRoutes.splice(selectedPath, 1)
+    allCoord = pastRoutes[selectedPath]["route"].map(coord => {
+        return coord.latitude + "," + coord.longitude;
+      }).join("|");
+    console.log(allCoord);
+    await deleteLocation(allCoord, HARDCODED_NETID);
+
+    pastRoutes.splice(selectedPath, 1);
+
     this.setState({
       modalVisible : false,
       selectedPath: -1,
@@ -167,6 +175,7 @@ class Map extends React.Component {
               <TouchableOpacity style = {styles.deleteBtn} onPress={this.deletePath} >
                 <Text> Delete Path </Text>
               </TouchableOpacity>
+
             </View>
           </View>
         </Modal>
@@ -175,6 +184,7 @@ class Map extends React.Component {
             { this.state.pastRoutes.map((prop, id) => {
               return <Polyline key={id} coordinates={prop["route"]} strokeWidth={3} lineJoin={"miter"} tappable={ true }
                             strokeColor={ "red" } onPress={ () => this.pressPath(id) }/>
+
             })}
             { this.drawPath() }
         </MapView>
@@ -235,6 +245,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 10,
     elevation: 2
+
   }
 });
 

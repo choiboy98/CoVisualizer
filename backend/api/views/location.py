@@ -18,17 +18,16 @@ def get_location():
 
     if data is None:
         return create_response(status=400, message="No body provided for person")
-    id = data.get("id")
     coordinates = data.get("coordinates")
     net_id = data.get("net_id")
 
-    sql = """SELECT * FROM location WHERE id = %s AND coordinates=%s AND net_id = %s;"""
+    sql = """SELECT * FROM location WHERE coordinates=%s AND net_id = %s;"""
     conn = None
     try:
         params = config()
         conn = psycopg2.connect(**params)
         cur = conn.cursor()
-        cur.execute(sql, (id, coordinates, net_id))
+        cur.execute(sql, (coordinates, net_id))
         items = cur.fetchone()
         conn.commit()
         cur.close()
@@ -38,7 +37,7 @@ def get_location():
         if conn is not None:
             conn.close()
 
-    output = {"id": items[0], "coordinates": items[1], "net_id": items[2], "risk": items[3], "location_name": items[4], "time_spent": items[5]}
+    output = {"coordinates": items[0], "net_id": items[1], "risk": items[2], "location_name": items[3], "time_spent": items[4]}
 
     return create_response(
         status=200,
@@ -47,7 +46,7 @@ def get_location():
 
 
 @location.route("/location/<coordinates>", methods=["PUT"])
-def update_location(id):
+def update_location(coordinates):
     """
     update infected status for specified location
     """
@@ -93,15 +92,16 @@ def create_new_location():
     location_name = data.get("location_name")
     time_spent = data.get("time_spent")
     sql = """INSERT INTO location
-             VALUES(%s, %s, %d, %s, %d);"""
+             VALUES(%(coordinates)s, %(net_id)s, %(risk)s, %(location_name)s, %(time_spent)s);"""
     conn = None
     items = None
     try:
         params = config()
         conn = psycopg2.connect(**params)
         cur = conn.cursor()
-        cur.execute(sql, (coordinates, net_id, risk, location_name, time_spent))
-        items = cur.fetchone()
+        print(data)
+        cur.execute(sql, data)
+        # items = cur.fetchone()
         conn.commit()
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
@@ -110,28 +110,29 @@ def create_new_location():
         if conn is not None:
             conn.close()
 
-    output = {"id": items[0], "coordinates": items[1], "net_id": items[2], "risk": items[3], "location_name": items[4], "time_spent": items[5]}
-    return create_response(status=200, data=output, message="successfully added new location")
+    # output = {"id": items[0], "coordinates": items[1], "net_id": items[2], "risk": items[3], "location_name": items[4], "time_spent": items[5]}
+    return create_response(status=200, message="successfully added new location")
 
 @location.route("/location/<id>", methods=["DELETE"])
-def delete_location():
+def delete_location(id):
     """
     create new location upon finish tracking
     """
     data = request.form
+    print(id)
+    print(data)
 
     if data is None:
         return create_response(status=400, message="No body provided for new location")
 
     coordinates = data.get("coordinates")
-    net_id = data.get("net_id")
-    sql = """DELETE FROM location WHERE id = %s AND coordinates = %s AND net_id = %s;"""
+    sql = """DELETE FROM location WHERE coordinates = %s AND net_id = %s;"""
     conn = None
     try:
         params = config()
         conn = psycopg2.connect(**params)
         cur = conn.cursor()
-        cur.execute(sql, (id, coordinates, net_id))
+        cur.execute(sql, (coordinates, id))
         conn.commit()
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
