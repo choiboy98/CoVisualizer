@@ -145,7 +145,6 @@ class Map extends React.Component {
     )
   }
 
-  render() {
   pressPath = (id) => {
     this.setState({
       modalVisible : true,
