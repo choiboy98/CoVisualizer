@@ -1,19 +1,29 @@
 import React, { Component } from 'react'
-import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity} from 'react-native';
-import { login, createUser } from './utility/ApiWrapper'
+import { updateUser } from './utility/ApiWrapper'
 import { CommonActions } from '@react-navigation/native';
+import ToggleSwitch from 'toggle-switch-react-native'
 
-
-export default class UserScreen extends Components {
+export default class UserScreen extends React.Component {
     constructor(props) {
         super(props)
 
         this.state = {
             phoneNum: "",
-            description: ""
+            description: "",
+            isOn: false,
+            email: "Test"
         }
+        this.updateInfected = this.updateInfected.bind(this);
     }
+
+    async updateInfected() {
+        console.log(this.state.isOn)
+        this.setState({isOn: !this.state.isOn})
+        console.log(this.state.isOn)
+        result = await updateUser(this.state.email, !this.state.isOn + "");
+    }
+
     render() {
         //Get username from backend and set it to variable username
         //Get email from backend and set it to variable email
@@ -21,24 +31,16 @@ export default class UserScreen extends Components {
             <View style={styles.container}>
               <Text style = {styles.initText}>Username: username goes here</Text>
               <Text style = {styles.initText}>Email: email goes here</Text>
-    
-              <TextInput 
-                style = {styles.input}
-                placeholder = "Phone Number"
-                secureTextEntry
-                value={this.state.phoneNum} 
-                onChangeText={(text) => this.setState({ password: text})}
-              />
-              <Text style = {styles.initText}>User Description:</Text>
-              <TextInput 
-                style = {styles.input}
-                placeholder = "Write a little bit about yourself here"
-                secureTextEntry
-                value={this.state.phoneNum} 
-                onChangeText={(text) => this.setState({ password: text})}
-              />
               
-              <StatusBar style="auto" />
+              <ToggleSwitch
+                isOn={this.state.isOn}
+                onColor="green"
+                offColor="red"
+                label="Infected?"
+                labelStyle={{ color: "black", fontWeight: "900" }}
+                size="large"
+                onToggle={this.updateInfected}
+                />
             </View>
           );
     }

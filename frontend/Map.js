@@ -2,8 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
-
-
+import { CommonActions } from '@react-navigation/native';
 
 // hardcoded to start in UIUC
 const LATITUDE = 40.1020;
@@ -39,6 +38,8 @@ class Map extends React.Component {
     pastDuration: [],
     start_duration: 0,
    };
+
+   this.goToUser = this.goToUser.bind(this)
   }
 
 
@@ -116,6 +117,14 @@ class Map extends React.Component {
     }
   }
 
+  goToUser() {
+    this.props.navigation.dispatch(
+      CommonActions.navigate({
+        name: 'User',
+      })
+    )
+  }
+
   render() {
 
 
@@ -133,6 +142,10 @@ class Map extends React.Component {
         <TouchableOpacity style = {styles.toggleTrackingBtn} onPress={this.setTracking} >
           <Text>{ this.state.isTracking ? "Turn Off Tracking" : "Turn On Tracking" }</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity style = {styles.toggleUserBtn} onPress={this.goToUser } >
+          <Text>User</Text>
+        </TouchableOpacity>
       </View>
     );  
   }
@@ -148,6 +161,18 @@ const styles = StyleSheet.create({
   toggleTrackingBtn : {
     position: 'absolute',
     right: 30,
+    top: 50,
+    paddingVertical: 8,
+    paddingHorizontal: 3,
+    borderWidth: 1,
+    borderColor: "black",
+    backgroundColor: "white",
+    fontSize: 30,
+    fontWeight: "bold"
+  },
+  toggleUserBtn : {
+    position: 'absolute',
+    left: 30,
     top: 50,
     paddingVertical: 8,
     paddingHorizontal: 3,
