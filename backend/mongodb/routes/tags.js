@@ -3,128 +3,90 @@ const Tag = require('../models/tag.js');
 const utils = require('../utils.js');
 
 // Define tag schema
-// "tagID" - String
-// "coords" - String
+// "path" - String
 // "locName" - String
 // "description" - String
 // "dateCreated" - Date - should be set automatically by server to present date
-const fields = ["tagID", "coords", "locName", "description", "dateCreated"];
+const fields = ["path", "locName", "description"];
 
 module.exports.postTag = async (req, res) => {
-	console.log("post")
+	var tag = new Tag();
 
-	res.end()
+	utils.setFields(tag, req.body, fields);
+
+	// assume the given coordinates are a valid set of coordinates
+	tag.save(async err => {
+		if (err) {
+			utils.handleResponse(res, 500, req.body, err.message);
+		} else {
+			delete tag._doc['__v'];
+			utils.handleResponse(res, 200, tag._doc, "Tag added successfully");
+		}
+	})
 }
 
-// module.exports.postTask = async (req, res) => {
-// 	// make assignedUser and assignedUserName fields accurate
-// 	var task = new Task();
+module.exports.getTagGivenId = async (req, res) => {
+	let id = req.params.id;
+	let tag = await Tag.findById(id).catch(err => {
+		return null;
+	});
+	if (tag) {
+		delete tag._doc['__v'];
+		utils.handleResponse(res, 200, tag._doc, "Get Tag Successful");
+	} else {
+		utils.handleResponse(res, 404, id, "Given ID doesn't exist");
+	}
+}
 
-// 	utils.setFields(task, req.body, fields);
+module.exports.getTag = async (req, res) => {
+	utils.handleQuery(res, Tag, req.query);
+}
 
-// 	var user;
-// 	if ("assignedUser" in req.body && req.body.assignedUser != "") {
-// 		// check if assigned user exists
-// 		let id = req.body.assignedUser;
-// 		user = await User.findById(id).catch(err => {
-// 			return null;
-// 		});
-// 		if (user) {
-// 			task.assignedUser = id;
-// 			task.assignedUserName = user.name;
-// 		} else {
-// 			utils.handleResponse(res, 500, req.body, "Given User ID doesn't exist");
-// 			return;
-// 		}
-// 	}
+module.exports.deleteTagGivenId = async (req, res) => {
+	let id = req.params.id;
 
-// 	task.save(async err => {
-// 		if (err) {
-// 			utils.handleResponse(res, 500, req.body, err.message);
-// 		} else {
-// 			if (user) {
-// 				user.pendingTasks.push(task._id);
-// 				await user.save();
-// 			}
-// 			utils.handleResponse(res, 200, task._doc, "Task added successfully");
-// 		}
-// 	});
-// }
+	let tag = await Tag.findById(id).catch(err => {
+		return null;
+	});
+	if (tag) {
+		let result = await tag.remove();
+		delete result['__v'];
+		utils.handleResponse(res, 200, result, "Delete Successful");
+	} else {
+		utils.handleResponse(res, 404, id, "Given Tag ID doesn't exist");
+	}
+}
 
-// module.exports.getTasks = (req, res) => {
-// 	utils.handleQuery(res, Task, req.query);
-// }
+module.exports.deleteTag = async (req, res) => {
+	Tag.deleteMany( req.query, function(err, result) {
+		if (err) {
+			utils.handleResponse(res, 400, req.query, err);
+		} else {
+			utils.handleResponse(res, 200, result, "Succesfully deleted tags");
+		}
+	});
+}
 
-// module.exports.getTaskGivenId = async (req, res) => {
-// 	let id = req.params.id;
-// 	let task = await Task.findById(id).catch(err => {
-// 		return null;
-// 	});
-// 	if (task) {
-// 		utils.handleResponse(res, 200, task._doc, "Get Task Successful");
-// 	} else {
-// 		utils.handleResponse(res, 404, id, "Given ID doesn't exist");
-// 	}
-// }
+module.exports.updateTagGivenId = async (req, res) => {
+	let id = req.params.id;
 
-// module.exports.deleteTaskGivenId = async (req, res) => {
-// 	let id = req.params.id;
+	let tag = await Tag.findById(id).catch(err => {
+		return null;
+	});
 
-// 	let task = await Task.findById(id).catch(err => {
-// 		return null;
-// 	});
-// 	if (task) {
-// 		if (task.assignedUser) {
-// 			let user = await User.findById(task.assignedUser).catch(err => null);
-// 			if (user) {
-// 				user.pendingTasks.pull(id);
-// 				await user.save();
-// 			}
-// 		}
-// 		let result = await task.remove();
-// 		utils.handleResponse(res, 200, result, "Delete Successful");
-// 	} else {
-// 		utils.handleResponse(res, 404, id, "Given Task ID doesn't exist");
-// 	}
-// }
+	if (tag) {
+		utils.setFields(tag, req.body, fields);
+		console.log(tag);
 
-// module.exports.updateTaskGivenId = async (req, res) => {
-// 	let id = req.params.id;
-
-// 	let task = await Task.findById(id).catch(err => {
-// 		return null;
-// 	});
-
-// 	if (task) {
-// 		utils.setFields(task, req.body, fields);
-// 		var user;
-// 		if ("assignedUser" in req.body) {
-// 			// check if assigned user exists
-// 			let id = req.body.assignedUser;
-// 			user = await User.findById(id).catch(err => {
-// 				return null;
-// 			});
-// 			if (user) {
-// 				task.assignedUser = id;
-// 				task.assignedUserName = user.name;
-// 			} else {
-// 				utils.handleResponse(res, 500, req.body, "Given User ID doesn't exist");
-// 				return;
-// 			}
-// 		}
-
-// 		task.save(async err => {
-// 			if (err) {
-// 				utils.handleResponse(res, 500, req.body, err.message);
-// 			} else {
-// 				if (user) {
-// 					user.pendingTasks.push(task._id)
-// 					await user.save();
-// 				}
-// 				utils.handleResponse(res, 200, task._doc, "Task updated successfully");
-// 			}
-// 		});
-// 	} else {
-// 		utils.handleResponse(res, 404, id, "Given Task ID doesn't exist");
-// 	}
-// }
+		tag.save(async err => {
+			if (err) {
+				utils.handleResponse(res, 500, req.body, err.message);
+			} else {
+				delete tag._doc['__v'];
+				utils.handleResponse(res, 200, tag._doc, "Tag updated successfully");
+			}
+		});
+	} else {
+		utils.handleResponse(res, 404, id, "Given Tag ID doesn't exist");
+	}
+}
