@@ -14,6 +14,9 @@ var port = process.env.PORT || 4000;
 // Connect to a MongoDB
 mongoose.connect(secrets.mongo_connection,  { useNewUrlParser: true });
 
+var cors = require('cors');
+app.use(cors());
+
 // Allow CORS so that backend and frontend could be put on different servers
 var allowCrossDomain = function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");

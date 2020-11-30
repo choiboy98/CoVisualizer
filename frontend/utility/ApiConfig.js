@@ -1,5 +1,6 @@
-let backend_url
+let BACKEND_URL, MONGO_URL
 
-backend_url = 'http://5211484e210a.ngrok.io'
+BACKEND_URL = 'http://5211484e210a.ngrok.io'
+MONGO_URL = 'http://127.0.0.1:4000/api/'
 
-export default backend_url
+export { BACKEND_URL, MONGO_URL }
