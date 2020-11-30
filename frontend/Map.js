@@ -3,7 +3,7 @@ import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Modal } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 import { CommonActions } from '@react-navigation/native';
-import { createLocation, deleteLocation, getTag, createTag } from './utility/ApiWrapper';
+import { createLocation, deleteLocation } from './utility/ApiWrapper';
 
 
 const HARDCODED_NETID = "Test"
@@ -153,10 +153,6 @@ class Map extends React.Component {
   }
 
   deletePath = async () => {
-
-    const test = await getTag(null, "new path");
-    console.log(test);
-
     // TODO add delete path from database here
     const { pastRoutes, selectedPath } = this.state;
     allCoord = pastRoutes[selectedPath]["route"].map(coord => {

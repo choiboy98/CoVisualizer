@@ -148,17 +148,15 @@ export const deleteLocation = (coordinates, net_id) => {
 // if given path: gets all tags related to the path
 // if given tagId: gets the tag with that id
 export const getTag = (tagId, path) => {
-  let data = {}
+  let query = {}
   let url = MONGO_URL + 'tags/'
   if (tagId) {
     url = url + tagId;
   } else if (path) {
-    data['where'] = "{ \"path\" : \"" + path + "\" }";
+    query['where'] = { 'path' : path };
   }
-  test = JSON.stringify(data);
-  console.log(test);
   return axios
-    .get(url, "\"" + test + "\"")
+    .get(url, { params : query })
     .then(response => {
       data = response.data.data;
       return {
@@ -198,21 +196,51 @@ export const createTag = (path, locName, description) => {
     })
 }
 
-// export const deleteTag = (id, path) => {
-//   let data = new FormData()
-//   data.append('coordinates', coordinates)
-//   return axios
-//     .delete(BACKEND_URL + '/location/' + net_id, data)
-//     .then(response => {
-//       return {
-//         type: 'DELETE_SUCCESSFUL',
-//         response
-//       }
-//     })
-//     .catch(error => {
-//       return {
-//         type: 'DELETE_FAIL',
-//         error
-//       }
-//     });
-// }
+// Can either delete tag using tagId or path
+// if given path: delete all tags related to the path
+// if given tagId: delete the tag with that id
+export const deleteTag = (tagId, path) => {
+  let query = {}
+  let url = MONGO_URL + 'tags/'
+
+  if (tagId) {
+    url = url + tagId;
+  } else if (path) {
+    query['path'] = path;
+  }
+  return axios
+    .delete(url, { params : query })
+    .then(response => {
+      data = response.data.data;
+      return {
+        type: 'DELETE_TAG_SUCCESSFUL',
+        data
+      }
+    })
+    .catch(error => {
+      return {
+        type: 'DELETE_TAG__FAIL',
+        error
+      }
+    });
+}
+
+// only allowed to update the description of the tag
+export const updateTag = (id, description) => {
+  let data = { "description" : description }
+  console.log(MONGO_URL + 'tags/' + id);
+  return axios
+    .put(MONGO_URL + 'tags/' + id, data)
+    .then(response => {
+      return {
+        type: 'UPDATE_TAG_SUCCESSFUL',
+        response
+      }
+    })
+    .catch(error => {
+      return {
+        type: 'UPDATE_TAG_FAIL',
+        error
+      }
+    })
+}
