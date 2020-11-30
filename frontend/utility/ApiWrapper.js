@@ -62,6 +62,23 @@ export const login = (net_id) => {
       })
   }
 
+  export const getAllLocation = () => {
+    return axios
+      .get(BACKEND_URL + '/get_all_location')
+      .then(response => {
+        return {
+          type: 'GET_SUCCESSFUL',
+          response
+        }
+      })
+      .catch(error => {
+        return {
+          type: 'GET_FAIL',
+          error
+        }
+      })
+  }
+
   export const getLocation = (id, coordinates, net_id) => {
     let data = new FormData()
     data.append('id', id)

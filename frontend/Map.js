@@ -1,10 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Modal } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Modal, ActivityIndicator } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 import { CommonActions } from '@react-navigation/native';
-import { createLocation, deleteLocation } from './utility/ApiWrapper';
-
+import { createLocation, deleteLocation, getAllLocation } from './utility/ApiWrapper';
 
 const HARDCODED_NETID = "Test"
 
@@ -42,7 +41,8 @@ class Map extends React.Component {
     pastRoutes: [],
     start_duration: 0,
     modalVisible: false,
-    selectedPath: -1
+    selectedPath: -1,
+    isLoading: true,
    };
 
    this.goToUser = this.goToUser.bind(this)
@@ -92,7 +92,12 @@ class Map extends React.Component {
     }
   }
 
-  componentDidMount() {
+  async componentDidMount() {
+    let allLocation = await getAllLocation()
+    if (allLocation.type == "GET_SUCCESSFUL") {
+      this.setState({pastRoutes: allLocation.response})
+    }
+    this.setState({isLoading: false})
     navigator.geolocation.getCurrentPosition(
       // only runs once
       position => {
@@ -177,39 +182,43 @@ class Map extends React.Component {
   }
 
   render() {
-    return (
-      <View style={styles.container}>
-
-        <Modal animationType="fade" transparent={true} visible={this.state.modalVisible} >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <TouchableOpacity style = {styles.deleteBtn} onPress={this.deletePath} >
-                <Text> Delete Path </Text>
-              </TouchableOpacity>
-
+    if (this.state.isLoading) {
+      return (<ActivityIndicator />)
+    } else {
+      return (
+        <View style={styles.container}>
+  
+          <Modal animationType="fade" transparent={true} visible={this.state.modalVisible} >
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <TouchableOpacity style = {styles.deleteBtn} onPress={this.deletePath} >
+                  <Text> Delete Path </Text>
+                </TouchableOpacity>
+  
+              </View>
             </View>
-          </View>
-        </Modal>
-        <MapView ref={this.state.mapRef} provider={PROVIDER_GOOGLE} style={{ ...StyleSheet.absoluteFillObject }} initialRegion={this.getMapRegion()}
-                        showsUserLocation={true} showsMyLocationButton={true} onUserLocationChange={this.followUser}>
-            { this.state.pastRoutes.map((prop, id) => {
-              return <Polyline key={id} coordinates={prop["route"]} strokeWidth={3} lineJoin={"miter"} tappable={ true }
-                            strokeColor={ "red" } onPress={ () => this.pressPath(id) }/>
-
-            })}
-            { this.drawPath() }
-        </MapView>
-
-
-        <TouchableOpacity style = {styles.toggleTrackingBtn} onPress={this.setTracking} >
-          <Text>{ this.state.isTracking ? "Turn Off Tracking" : "Turn On Tracking" }</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style = {styles.toggleUserBtn} onPress={this.goToUser } >
-          <Text>User</Text>
-        </TouchableOpacity>
-      </View>
-    );  
+          </Modal>
+          <MapView ref={this.state.mapRef} provider={PROVIDER_GOOGLE} style={{ ...StyleSheet.absoluteFillObject }} initialRegion={this.getMapRegion()}
+                          showsUserLocation={true} showsMyLocationButton={true} onUserLocationChange={this.followUser}>
+              { this.state.pastRoutes.map((prop, id) => {
+                return <Polyline key={id} coordinates={prop["route"]} strokeWidth={3} lineJoin={"miter"} tappable={ true }
+                              strokeColor={ "red" } onPress={ () => this.pressPath(id) }/>
+  
+              })}
+              { this.drawPath() }
+          </MapView>
+  
+  
+          <TouchableOpacity style = {styles.toggleTrackingBtn} onPress={this.setTracking} >
+            <Text>{ this.state.isTracking ? "Turn Off Tracking" : "Turn On Tracking" }</Text>
+          </TouchableOpacity>
+  
+          <TouchableOpacity style = {styles.toggleUserBtn} onPress={this.goToUser } >
+            <Text>User</Text>
+          </TouchableOpacity>
+        </View>
+      );  
+    }
   }
 }
 
