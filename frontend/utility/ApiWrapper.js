@@ -62,26 +62,44 @@ export const updateUser = (net_id, infected) => {
     })
 }
 
-export const getLocation = (id, coordinates, net_id) => {
-  let data = new FormData()
-  data.append('id', id)
-  data.append('coordinates', coordinates)
-  data.append('net_id', net_id)
-  return axios
-    .post(BACKEND_URL + '/get_location', data)
-    .then(response => {
-      return {
-        type: 'GET_SUCCESSFUL',
-        response
-      }
-    })
-    .catch(error => {
-      return {
-        type: 'GET_FAIL',
-        error
-      }
-    })
-}
+
+  export const getAllLocation = () => {
+    return axios
+      .get(BACKEND_URL + '/get_all_location')
+      .then(response => {
+        return {
+          type: 'GET_SUCCESSFUL',
+          response
+        }
+      })
+      .catch(error => {
+        return {
+          type: 'GET_FAIL',
+          error
+        }
+      })
+  }
+
+  export const getLocation = (id, coordinates, net_id) => {
+    let data = new FormData()
+    data.append('id', id)
+    data.append('coordinates', coordinates)
+    data.append('net_id', net_id)
+    return axios
+      .post(BACKEND_URL + '/get_location', data)
+      .then(response => {
+        return {
+          type: 'GET_SUCCESSFUL',
+          response
+        }
+      })
+      .catch(error => {
+        return {
+          type: 'GET_FAIL',
+          error
+        }
+      })
+  }
 
 export const updateLocation = (coordinates, risk) => {
   let data = new FormData()
