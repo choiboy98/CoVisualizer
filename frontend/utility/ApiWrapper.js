@@ -143,3 +143,87 @@ export const login = (net_id) => {
         }
       })
   }
+
+  export const getInfectionInfo = (coordinates) => {
+    let data = new FormData()
+    data.append('coordinates', coordinates)
+    return axios
+      .post(BACKEND_URL + '/infection', data)
+      .then(response => {
+        return {
+          type: 'GET_SUCCESSFUL',
+          response
+        }
+      })
+      .catch(error => {
+        return {
+          type: 'GET_FAIL',
+          error
+        }
+      })
+  }
+
+  export const updateInfection = (coordinates, num_people_visited, num_infected_people, risk) => {
+    let data = new FormData()
+    data.append('coordinates', coordinates)
+    data.append('num_people_visited', num_people_visited)
+    data.append('num_infected_people', num_infected_people)
+    data.append('risk', risk)
+    return axios
+      .put(BACKEND_URL + '/infection/' + coordinates, data)
+      .then(response => {
+        return {
+          type: 'UPDATE_SUCCESSFUL',
+          response
+        }
+      })
+      .catch(error => {
+        return {
+          type: 'UPDATE_FAIL',
+          error
+        }
+      })
+  }
+
+  export const createInfection = (coordinates, num_people_visited, num_infected_people, risk) => {
+    let data = new FormData()
+    data.append('coordinates', coordinates)
+    data.append('num_people_visited', num_people_visited)
+    data.append('num_infected_people', num_infected_people)
+    data.append('risk', risk)
+    return axios
+      .post(BACKEND_URL + '/infection', data)
+      .then(response => {
+        return {
+          type: 'CREATE_SUCCESSFUL',
+          response
+        }
+      })
+      .catch(error => {
+        return {
+          type: 'CREATE_FAIL',
+          error
+        }
+      })
+  }
+
+  export const deleteInfection = (coordinates) => {
+    let data = new FormData()
+    data.append('coordinates', coordinates)
+    return axios
+      .delete(BACKEND_URL + '/infection/', data)
+      .then(response => {
+        return {
+          type: 'DELETE_SUCCESSFUL',
+          response
+        }
+      })
+      .catch(error => {
+        return {
+          type: 'DELETE_FAIL',
+          error
+        }
+      })
+  }
+
+  
