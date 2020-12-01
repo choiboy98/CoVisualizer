@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, TouchableOpacity, Modal, ActivityIndicator } fr
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 import { CommonActions } from '@react-navigation/native';
 import { createLocation, deleteLocation, getAllLocation } from './utility/ApiWrapper';
+import PathInfo from './PathInfo';
 
 const HARDCODED_NETID = "Test"
 
@@ -46,6 +47,7 @@ class Map extends React.Component {
    };
 
    this.goToUser = this.goToUser.bind(this)
+   this.deletePath = this.deletePath.bind(this)
   }
 
 
@@ -187,17 +189,9 @@ class Map extends React.Component {
     } else {
       return (
         <View style={styles.container}>
-  
-          <Modal animationType="fade" transparent={true} visible={this.state.modalVisible} >
-            <View style={styles.centeredView}>
-              <View style={styles.modalView}>
-                <TouchableOpacity style = {styles.deleteBtn} onPress={this.deletePath} >
-                  <Text> Delete Path </Text>
-                </TouchableOpacity>
-  
-              </View>
-            </View>
-          </Modal>
+
+          <PathInfo deletePath={ this.deletePath } modalVisible={ this.state.modalVisible } selectedPath={ this.state.selectedPath }/>
+
           <MapView ref={this.state.mapRef} provider={PROVIDER_GOOGLE} style={{ ...StyleSheet.absoluteFillObject }} initialRegion={this.getMapRegion()}
                           showsUserLocation={true} showsMyLocationButton={true} onUserLocationChange={this.followUser}>
               { this.state.pastRoutes.map((prop, id) => {
@@ -252,36 +246,6 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     fontSize: 30,
     fontWeight: "bold"
-  },
-  centeredView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 22
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5
-  },
-  deleteBtn: {
-    borderWidth: 1,
-    borderColor: "black",
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2
-
   }
 });
 
