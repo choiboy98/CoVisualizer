@@ -27,6 +27,10 @@ class PathInfo extends React.Component {
   deletePath = () => {
     this.setState({
       visible: false,
+      currPathCoord: "",
+      pathName: "N/A",
+      netid: "N/A",
+      risk: "N/A"
     });
     this.props.deletePath();
   }
