@@ -170,7 +170,8 @@ class Map extends React.Component {
   deletePath = async () => {
     // TODO add delete path from database here
     const { pastRoutes, selectedPath, currPathCoord } = this.state;
-    await deleteLocation(allCoord, HARDCODED_NETID);
+    response = await deleteLocation(allCoord, HARDCODED_NETID); //TODO remove
+    console.log(response);
 
     pastRoutes.splice(selectedPath, 1);
 

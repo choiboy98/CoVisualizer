@@ -13,7 +13,8 @@ class PathInfo extends React.Component {
     currPathCoord: this.props.currPathCoord,
     pathName: "N/A",
     netid: "N/A",
-    risk: "N/A"
+    risk: "N/A",
+    fetching: false
    };
   }
 
@@ -43,8 +44,10 @@ class PathInfo extends React.Component {
   }
 
   getPathInfo = async (currPathCoord, netid, modalVisible) => {
-    if (modalVisible) {
+    if (modalVisible && !this.state.fetching) {
+      this.setState({ fetching: true });
       let data = await getLocation(currPathCoord, netid)
+      this.setState({ fetching: false });
       if (data.type == "GET_SUCCESSFUL") {
         results = data.response.data.result;
         this.setState({

@@ -16,7 +16,7 @@ def get_location():
     # gets database values from query string, if missing is None
     data = request.form
 
-    if data is None:
+    if len(data) == 0:
         return create_response(status=400, message="No body provided for person")
     coordinates = data.get("coordinates")
     net_id = data.get("net_id")
@@ -52,7 +52,7 @@ def update_location(coordinates):
     """
     data = request.form
 
-    if data is None:
+    if len(data) == 0:
         return create_response(status=400, message="No body provided for location")
 
     risk = data.get("risk")
@@ -83,7 +83,7 @@ def create_new_location():
     """
     data = request.form
 
-    if data is None:
+    if len(data) == 0:
         return create_response(status=400, message="No body provided for new location")
 
     coordinates = data.get("coordinates")
@@ -119,10 +119,13 @@ def delete_location(id):
     create new location upon finish tracking
     """
     data = request.form
+    print(request.json)
+    print(request.values)
+    print(request.args)
     print(id)
     print(data)
 
-    if data is None:
+    if len(data) == 0:
         return create_response(status=400, message="No body provided for new location")
 
     coordinates = data.get("coordinates")
