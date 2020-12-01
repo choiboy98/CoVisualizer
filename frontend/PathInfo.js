@@ -21,17 +21,37 @@ class PathInfo extends React.Component {
   	}
   }
 
+  deletePath = () => {
+    this.setState({
+      visible: false,
+    });
+    this.props.deletePath();
+  }
+
+  setModalVisible = () => {
+    this.setState({
+      visible: false,
+    });
+    this.props.exitModal();
+  }
+
 	render() {
 		return (
+        <View>
 					<Modal animationType="fade" transparent={true} visible={this.state.visible} >
-            <View style={styles.centeredView}>
+            <TouchableOpacity 
+              style={styles.centeredView} 
+              activeOpacity={1} 
+              onPressOut={this.setModalVisible}
+            >
               <View style={styles.modalView}>
                 <TouchableOpacity style = {styles.deleteBtn} onPress={this.props.deletePath} >
                   <Text> Delete Path </Text>
                 </TouchableOpacity>
-              </View>
             </View>
+            </TouchableOpacity>
           </Modal>
+        </View>
 			)
 	}
 

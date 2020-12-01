@@ -47,7 +47,6 @@ class Map extends React.Component {
    };
 
    this.goToUser = this.goToUser.bind(this)
-   this.deletePath = this.deletePath.bind(this)
   }
 
 
@@ -177,6 +176,13 @@ class Map extends React.Component {
     });
   }
 
+  exitModal = () => {
+    this.setState({
+      modalVisible : false,
+      selectedPath: -1
+    });
+  }
+
   drawPath = () => {
     if (this.state.routeCoordinates.length != 0) {
       return <Polyline coordinates={this.state.routeCoordinates} strokeWidth={5} lineJoin={"miter"} strokeColor={ "red" }/>;
@@ -190,7 +196,8 @@ class Map extends React.Component {
       return (
         <View style={styles.container}>
 
-          <PathInfo deletePath={ this.deletePath } modalVisible={ this.state.modalVisible } selectedPath={ this.state.selectedPath }/>
+          <PathInfo deletePath={ this.deletePath } modalVisible={ this.state.modalVisible } 
+                        selectedPath={ this.state.selectedPath } exitModal={this.exitModal}/>
 
           <MapView ref={this.state.mapRef} provider={PROVIDER_GOOGLE} style={{ ...StyleSheet.absoluteFillObject }} initialRegion={this.getMapRegion()}
                           showsUserLocation={true} showsMyLocationButton={true} onUserLocationChange={this.followUser}>
