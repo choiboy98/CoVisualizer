@@ -147,10 +147,10 @@ export const createLocation = (coordinates, net_id, risk, location_name, time_sp
 
 
 export const deleteLocation = (coordinates, net_id) => {
-  let data = new FormData()
-  data.append('coordinates', coordinates)
+  let payload = new FormData()
+  payload.append('coordinates', coordinates)
   return axios
-    .delete(BACKEND_URL + '/location/' + net_id, data)
+    .delete(BACKEND_URL + '/location/' + net_id, { data: payload })
     .then(response => {
       return {
         type: 'DELETE_SUCCESSFUL',
@@ -158,9 +158,10 @@ export const deleteLocation = (coordinates, net_id) => {
       }
     })
     .catch(error => {
+      err = error.response
       return {
         type: 'DELETE_FAIL',
-        error
+        err
       }
     })
 }
@@ -229,10 +230,10 @@ export const createInfection = (coordinates, num_people_visited, num_infected_pe
 }
 
 export const deleteInfection = (coordinates) => {
-  let data = new FormData()
-  data.append('coordinates', coordinates)
+  let payload = new FormData()
+  payload.append('coordinates', coordinates)
   return axios
-    .delete(BACKEND_URL + '/infection/', data)
+    .delete(BACKEND_URL + '/infection/', { data: payload })
     .then(response => {
       return {
         type: 'DELETE_SUCCESSFUL',
