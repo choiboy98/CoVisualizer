@@ -4,10 +4,10 @@ const utils = require('../utils.js');
 
 // Define tag schema
 // "path" - String
-// "locName" - String
+// "pathName" - String
 // "description" - String
 // "dateCreated" - Date - should be set automatically by server to present date
-const fields = ["path", "locName", "description"];
+const fields = ["path", "pathName", "description"];
 
 module.exports.postTag = async (req, res) => {
 	var tag = new Tag();

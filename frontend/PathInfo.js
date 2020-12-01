@@ -1,23 +1,26 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Modal, ActivityIndicator } from 'react-native';
-
+import { getLocation } from './utility/ApiWrapper';
+import Tags from "react-native-tags";
 
 class PathInfo extends React.Component {
 
   constructor(props) {
    super(props);
    this.state = {
-   	visible: this.props.modalVisible
+   	visible: this.props.modalVisible,
+    currPathCoord: this.props.currPathCoord,
+    pathName: "N/A",
+    netid: "N/A",
+    risk: "N/A"
    };
   }
 
   componentDidUpdate(prevProps) {
-  	if (prevProps.modalVisible != this.state.visible) {
-	    this.setState({
-				visible: this.props.modalVisible,
-				selectedPath: this.selectedPath
-			});
+  	if ( prevProps.modalVisible != this.state.visible ||
+          (prevProps.currPathCoord != this.state.currPathCoord && this.props.currPathCoord != "")) {
+      this.getPathInfo(this.props.currPathCoord, this.props.netid, this.props.modalVisible);
   	}
   }
 
@@ -35,6 +38,27 @@ class PathInfo extends React.Component {
     this.props.exitModal();
   }
 
+  getPathInfo = async (currPathCoord, netid, modalVisible) => {
+    if (modalVisible) {
+      let data = await getLocation(currPathCoord, netid)
+      if (data.type == "GET_SUCCESSFUL") {
+        results = data.response.data.result;
+        this.setState({
+          pathName: results.location_name,
+          netid: results.net_id,
+          risk: results.risk
+        });
+      } else {
+        console.log("error");
+        console.log(data)
+      }
+    }
+    this.setState({
+      visible: modalVisible,
+      currPathCoord: currPathCoord
+    });
+  }
+
 	render() {
 		return (
         <View>
@@ -45,6 +69,17 @@ class PathInfo extends React.Component {
               onPressOut={this.setModalVisible}
             >
               <View style={styles.modalView}>
+
+                <View style={styles.descriptionView}>
+                  <Text>NetID: {this.state.netid}</Text>
+                  <Text>Path Name: { this.state.pathName }</Text>
+                  <Text>Risk: { this.state.risk }</Text>
+                </View>
+
+                <View style={styles.tagView}>
+                  <Text>Tags: add here probably can use the reactnativetags</Text>
+                </View>
+
                 <TouchableOpacity style = {styles.deleteBtn} onPress={this.props.deletePath} >
                   <Text> Delete Path </Text>
                 </TouchableOpacity>
@@ -79,6 +114,12 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5
   },
+  descriptionView: {
+    margin: 5
+  },
+  tagView: {
+    margin: 5
+  },
   deleteBtn: {
     borderWidth: 1,
     borderColor: "black",
@@ -86,7 +127,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 10,
     elevation: 2
-
   }
 });
 
