@@ -36,9 +36,10 @@ export const createUser = (net_id, name, email, phone, infected) => {
       }
     })
     .catch(error => {
+      err = error.response;
       return {
         type: 'CREATE_FAIL',
-        error
+        err
       }
     })
 }
@@ -80,9 +81,8 @@ export const updateUser = (net_id, infected) => {
       })
   }
 
-  export const getLocation = (id, coordinates, net_id) => {
+  export const getLocation = (coordinates, net_id) => {
     let data = new FormData()
-    data.append('id', id)
     data.append('coordinates', coordinates)
     data.append('net_id', net_id)
     return axios
@@ -94,9 +94,10 @@ export const updateUser = (net_id, infected) => {
         }
       })
       .catch(error => {
+        err = error.response;
         return {
           type: 'GET_FAIL',
-          error
+          err
         }
       })
   }
@@ -136,9 +137,10 @@ export const createLocation = (coordinates, net_id, risk, location_name, time_sp
       }
     })
     .catch(error => {
+      err = error.response
       return {
         type: 'CREATE_FAIL',
-        error
+        err
       }
     })
 }

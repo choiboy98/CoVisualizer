@@ -44,10 +44,11 @@ class Map extends React.Component {
     modalVisible: false,
     selectedPath: -1,
     isLoading: true,
+    currPathCoord: "",
+    netid: HARDCODED_NETID // TODO CHANGE
    };
 
    this.goToUser = this.goToUser.bind(this)
-   this.deletePath = this.deletePath.bind(this)
   }
 
 
@@ -81,6 +82,7 @@ class Map extends React.Component {
                   "unknown",
                   "----",
                   allDurations);
+      console.log(response);
 
       // adding to past Routes state TODO MAY REMOVE ONCE DATABASE IS DONE
 
@@ -153,19 +155,21 @@ class Map extends React.Component {
   }
 
   pressPath = (id) => {
+    const { pastRoutes } = this.state;
+    allCoord = pastRoutes[id]["route"].map(coord => {
+        return coord.latitude + "," + coord.longitude;
+      }).join("|");
+    console.log(allCoord);
     this.setState({
       modalVisible : true,
-      selectedPath: id
+      selectedPath: id,
+      currPathCoord: allCoord
     });
   }
 
   deletePath = async () => {
     // TODO add delete path from database here
-    const { pastRoutes, selectedPath } = this.state;
-    allCoord = pastRoutes[selectedPath]["route"].map(coord => {
-        return coord.latitude + "," + coord.longitude;
-      }).join("|");
-    console.log(allCoord);
+    const { pastRoutes, selectedPath, currPathCoord } = this.state;
     await deleteLocation(allCoord, HARDCODED_NETID);
 
     pastRoutes.splice(selectedPath, 1);
@@ -173,7 +177,16 @@ class Map extends React.Component {
     this.setState({
       modalVisible : false,
       selectedPath: -1,
-      pastRoutes: pastRoutes
+      pastRoutes: pastRoutes,
+      currPathCoord: ""
+    });
+  }
+
+  exitModal = () => {
+    this.setState({
+      modalVisible : false,
+      selectedPath: -1,
+      currPathCoord: ""
     });
   }
 
@@ -190,7 +203,8 @@ class Map extends React.Component {
       return (
         <View style={styles.container}>
 
-          <PathInfo deletePath={ this.deletePath } modalVisible={ this.state.modalVisible } selectedPath={ this.state.selectedPath }/>
+          <PathInfo deletePath={ this.deletePath } modalVisible={ this.state.modalVisible } netid={ this.state.netid }
+                        currPathCoord={ this.state.currPathCoord } exitModal={this.exitModal}/>
 
           <MapView ref={this.state.mapRef} provider={PROVIDER_GOOGLE} style={{ ...StyleSheet.absoluteFillObject }} initialRegion={this.getMapRegion()}
                           showsUserLocation={true} showsMyLocationButton={true} onUserLocationChange={this.followUser}>
