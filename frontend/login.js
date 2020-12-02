@@ -21,14 +21,14 @@ export default class LoginScreen extends Component {
     };
 
     async login() {
-      result = await getUser(this.state.email.toLowerCase());
-      if (result.type == "LOGIN_SUCCESSFUL") {
+      result = await login(this.state.email.toLowerCase());
+      // if (result.type == "LOGIN_SUCCESSFUL") {
         this.props.navigation.dispatch(
             CommonActions.navigate('Map', {
               netid: this.state.email.toLowerCase()
             })
           );
-      }
+      // }
     }
 
     async register() {
