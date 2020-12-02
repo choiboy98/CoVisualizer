@@ -6,6 +6,10 @@ import { CommonActions } from '@react-navigation/native';
 import { createLocation, deleteLocation, getAllLocation } from './utility/ApiWrapper';
 import PathInfo from './PathInfo';
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9dc75d2d256c2639f92c9412e9570e8c2835f52e
 // hardcoded to start in UIUC
 const LATITUDE = 40.1020;
 const LONGITUDE = -88.2272;
@@ -167,7 +171,7 @@ class Map extends React.Component {
   deletePath = async () => {
     // TODO add delete path from database here
     const { pastRoutes, selectedPath, currPathCoord } = this.state;
-    response = await deleteLocation(allCoord, this.prop.netid); //TODO remove
+    response = await deleteLocation(allCoord, this.state.netid);
     console.log(response);
 
     pastRoutes.splice(selectedPath, 1);
@@ -202,7 +206,7 @@ class Map extends React.Component {
         <View style={styles.container}>
 
           <PathInfo deletePath={ this.deletePath } modalVisible={ this.state.modalVisible } netid={ this.state.netid }
-                        currPathCoord={ this.state.currPathCoord } exitModal={this.exitModal}/>
+                        currPathCoord={ this.state.currPathCoord } exitModal={this.exitModal} navigation={ this.props.navigation }/>
 
           <MapView ref={this.state.mapRef} provider={PROVIDER_GOOGLE} style={{ ...StyleSheet.absoluteFillObject }} initialRegion={this.getMapRegion()}
                           showsUserLocation={true} showsMyLocationButton={true} onUserLocationChange={this.followUser}>
