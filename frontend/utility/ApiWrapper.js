@@ -5,7 +5,7 @@ export const login = (net_id) => {
     let data = new FormData()
     data.append('net_id', net_id)
     return axios
-      .post(BACKEND_URL + '/person', data)
+      .get(BACKEND_URL + '/person/'+ net_id)
       .then(response => {
         return {
           type: 'LOGIN_SUCCESSFUL',
