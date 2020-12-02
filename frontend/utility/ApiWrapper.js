@@ -67,7 +67,7 @@ export const updateUser = (net_id, infected) => {
 
   export const getAllLocation = () => {
     return axios
-      .get(BACKEND_URL + '/get_all_location')
+      .get(BACKEND_URL + '/all_location')
       .then(response => {
         return {
           type: 'GET_SUCCESSFUL',
