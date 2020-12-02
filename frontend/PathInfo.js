@@ -14,14 +14,16 @@ class PathInfo extends React.Component {
     pathName: "N/A",
     netid: "N/A",
     risk: "N/A",
-    fetching: false
+    fetching: false,
+    myPath: this.props.myPath
    };
   }
 
   componentDidUpdate(prevProps) {
   	if ( prevProps.modalVisible != this.state.visible ||
           (prevProps.currPathCoord != this.state.currPathCoord && this.props.currPathCoord != "")) {
-      this.getPathInfo(this.props.currPathCoord, this.props.netid, this.props.modalVisible);
+      console.log(this.props.myPath)
+      this.getPathInfo(this.props.currPathCoord, this.props.netid, this.props.modalVisible, this.props.myPath);
   	}
   }
 
@@ -43,7 +45,7 @@ class PathInfo extends React.Component {
     this.props.exitModal();
   }
 
-  getPathInfo = async (currPathCoord, netid, modalVisible) => {
+  getPathInfo = async (currPathCoord, netid, modalVisible, myPath) => {
     if (modalVisible && !this.state.fetching) {
       this.setState({ fetching: true });
       let data = await getLocation(currPathCoord, netid)
@@ -62,39 +64,61 @@ class PathInfo extends React.Component {
     }
     this.setState({
       visible: modalVisible,
-      currPathCoord: currPathCoord
+      currPathCoord: currPathCoord,
+      myPath: myPath
     });
   }
 
 	render() {
-		return (
-        <View>
-					<Modal animationType="fade" transparent={true} visible={this.state.visible} >
-            <TouchableOpacity 
-              style={styles.centeredView} 
-              activeOpacity={1} 
-              onPressOut={this.setModalVisible}
-            >
-              <View style={styles.modalView}>
+    if (this.state.myPath) {
+  		return (
+          <View>
+  					<Modal animationType="fade" transparent={true} visible={this.state.visible} >
+              <TouchableOpacity 
+                style={styles.centeredView} 
+                activeOpacity={1} 
+                onPressOut={this.setModalVisible}
+              >
+                <View style={styles.modalView}>
 
-                <View style={styles.descriptionView}>
-                  <Text>NetID: {this.state.netid}</Text>
-                  <Text>Path Name: { this.state.pathName }</Text>
-                  <Text>Risk: { this.state.risk }</Text>
-                </View>
+                  <View style={styles.descriptionView}>
+                    <Text>NetID: {this.state.netid}</Text>
+                    <Text>Path Name: { this.state.pathName }</Text>
+                    <Text>Risk: { this.state.risk }</Text>
+                  </View>
 
-                <View style={styles.tagView}>
-                  <Text>Tags: add here probably can use the reactnativetags</Text>
-                </View>
+                  <View style={styles.tagView}>
+                    <Text>Tags: add here probably can use the reactnativetags</Text>
+                  </View>
 
-                <TouchableOpacity style = {styles.deleteBtn} onPress={this.props.deletePath} >
-                  <Text> Delete Path </Text>
-                </TouchableOpacity>
-            </View>
-            </TouchableOpacity>
-          </Modal>
-        </View>
-			)
+                  <TouchableOpacity style = {styles.deleteBtn} onPress={this.props.deletePath} >
+                    <Text> Delete Path </Text>
+                  </TouchableOpacity>
+              </View>
+              </TouchableOpacity>
+            </Modal>
+          </View>
+  			)
+      } else {
+          return (
+              <View>
+                <Modal animationType="fade" transparent={true} visible={this.state.visible} >
+                  <TouchableOpacity 
+                    style={styles.centeredView} 
+                    activeOpacity={1} 
+                    onPressOut={this.setModalVisible}
+                  >
+                    <View style={styles.modalView}>
+
+                      <View style={styles.descriptionView}>
+                        <Text>Risk: { this.state.risk }</Text>
+                      </View>
+                  </View>
+                  </TouchableOpacity>
+                </Modal>
+              </View>
+            )
+        }
 	}
 
 }
