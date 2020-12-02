@@ -68,12 +68,13 @@ class PathInfo extends React.Component {
     });
   }
 
-  async tag() {
+  tag = () => {
     this.props.navigation.dispatch(
         CommonActions.navigate({
           name: 'Tagging',
         })
       );
+    this.setModalVisible();
   }
 
   render() {
