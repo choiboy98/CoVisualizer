@@ -3,7 +3,7 @@ import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Modal, ActivityIndicator } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 import { CommonActions } from '@react-navigation/native';
-import { createLocation, deleteLocation, getAllLocation } from './utility/ApiWrapper';
+import { createLocation, deleteLocation, getAllLocation, getUser } from './utility/ApiWrapper';
 import PathInfo from './PathInfo';
 
 
@@ -43,7 +43,8 @@ class Map extends React.Component {
     selectedPath: -1,
     isLoading: true,
     currPathCoord: "",
-    netid: this.props.route.params.netid // TODO CHANGE
+    netid: this.props.route.params.netid,
+    infected: this.props.route.params.infected
    };
 
    this.goToUser = this.goToUser.bind(this)
@@ -74,11 +75,17 @@ class Map extends React.Component {
       }).join("|");
       allDurations = duration.concat([new Date().getTime() - start_duration]).join("|");
 
+      result = await getUser(this.state.netid);
+      risk_lvl = "unknown"
+      if (result.type == "LOGIN_SUCCESSFUL") {
+          risk_lvl = result.response.data.result.infected == "true" ? "high" : "low";
+      }
+      console.log(this.state.infected)
       response = await createLocation(
                   allCoord,
                   this.state.netid,
-                  "unknown",
-                  "----",
+                  risk_lvl,
+                  "Walk",
                   allDurations);
       console.log(response);
 
@@ -157,6 +164,7 @@ class Map extends React.Component {
     allCoord = pastRoutes[id]["route"].map(coord => {
         return coord.latitude + "," + coord.longitude;
       }).join("|");
+    // console.log(pastRoutes)
     console.log(allCoord);
     this.setState({
       modalVisible : true,
@@ -168,7 +176,7 @@ class Map extends React.Component {
   deletePath = async () => {
     // TODO add delete path from database here
     const { pastRoutes, selectedPath, currPathCoord } = this.state;
-    response = await deleteLocation(allCoord, this.state.netid);
+    response = await deleteLocation(currPathCoord, this.state.netid);
     console.log(response);
 
     pastRoutes.splice(selectedPath, 1);
