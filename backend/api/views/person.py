@@ -8,8 +8,8 @@ from datetime import datetime
 person = Blueprint("person", __name__)
 
 
-@person.route("/person", methods=["GET"])
-def get_person():
+@person.route("/person/<id>", methods=["GET"])
+def get_person(id):
     """
     get person based on net_id
     """
@@ -25,7 +25,7 @@ def get_person():
         params = config()
         conn = psycopg2.connect(**params)
         cur = conn.cursor()
-        cur.execute(sql, (net_id,))
+        cur.execute(sql, (id,))
         items = cur.fetchone()
         conn.commit()
         cur.close()
