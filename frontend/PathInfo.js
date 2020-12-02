@@ -2,7 +2,9 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Modal, ActivityIndicator } from 'react-native';
 import { getLocation } from './utility/ApiWrapper';
-import Tags from "react-native-tags";
+import { CommonActions } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
+import Tags from 'react-native-tags';
 
 class PathInfo extends React.Component {
 
@@ -43,27 +45,6 @@ class PathInfo extends React.Component {
     this.props.exitModal();
   }
 
-  MyTagInput = () => {
-    <Tags
-      initialText="Infected"
-      textInputProps={{
-        placeholder: "Pertinent info"
-      }}
-      initialTags={["15 minutes", "sick", "be safe!"]}
-      onChangeTags={tags => console.log(tags)}
-      onTagPress={(index, tagLabel, event, deleted) =>
-        console.log(index, tagLabel, event, deleted ? "deleted" : "not deleted")
-      }
-      containerStyle={{ justifyContent: "center" }}
-      inputStyle={{ backgroundColor: "white" }}
-      renderTag={({ tag, index, onPress, deleteTagOnPress, readonly }) => (
-        <TouchableOpacity key={`${tag}-${index}`} onPress={onPress}>
-          <Text>{tag}</Text>
-        </TouchableOpacity>
-      )}
-    />
-  };
-
   getPathInfo = async (currPathCoord, netid, modalVisible) => {
     if (modalVisible && !this.state.fetching) {
       this.setState({ fetching: true });
@@ -87,7 +68,15 @@ class PathInfo extends React.Component {
     });
   }
 
-	render() {
+  async tag() {
+    this.props.navigation.dispatch(
+        CommonActions.navigate({
+          name: 'Tagging',
+        })
+      );
+  }
+
+  render() {
 		return (
         <View>
 					<Modal animationType="fade" transparent={true} visible={this.state.visible} >
@@ -104,8 +93,8 @@ class PathInfo extends React.Component {
                   <Text>Risk: { this.state.risk }</Text>
                 </View>
 
-                <TouchableOpacity style={styles.tagView} onPress={this.props.MyTagInput}>
-                  <Text>Tags: add here probably can use the reactnativetags</Text>
+                <TouchableOpacity style={styles.tagView} onPress={this.tag}>
+                  <Text>Add Tags</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style = {styles.deleteBtn} onPress={this.props.deletePath} >
@@ -146,6 +135,12 @@ const styles = StyleSheet.create({
     margin: 5
   },
   tagView: {
+    borderWidth: 1,
+    borderColor: "black",
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
     margin: 5
   },
   deleteBtn: {
