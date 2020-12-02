@@ -37,7 +37,7 @@ export default class LoginScreen extends Component {
         console.log(result);
         this.props.navigation.dispatch(
             CommonActions.navigate({
-              name: 'Map',
+              name: 'Signup',
             })
           );
     }

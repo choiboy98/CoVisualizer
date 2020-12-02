@@ -229,6 +229,7 @@ class Map extends React.Component {
       return (
         <View style={styles.container}>
 
+
           <PathInfo deletePath={ this.deletePath } modalVisible={ this.state.modalVisible } netid={ this.state.selectedPathNetid } myPath={this.state.myPath}
                         currPathCoord={ this.state.currPathCoord } exitModal={this.exitModal} navigation={ this.props.navigation }/>
 

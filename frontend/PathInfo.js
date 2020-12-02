@@ -2,7 +2,9 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Modal, ActivityIndicator } from 'react-native';
 import { getLocation } from './utility/ApiWrapper';
-import Tags from "react-native-tags";
+import { CommonActions } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
+import Tags from 'react-native-tags';
 
 class PathInfo extends React.Component {
 
@@ -22,7 +24,7 @@ class PathInfo extends React.Component {
   componentDidUpdate(prevProps) {
   	if ( prevProps.modalVisible != this.state.visible ||
           (prevProps.currPathCoord != this.state.currPathCoord && this.props.currPathCoord != "")) {
-      console.log(this.props.myPath)
+      // console.log(this.props.myPath)
       this.getPathInfo(this.props.currPathCoord, this.props.netid, this.props.modalVisible, this.props.myPath);
   	}
   }
@@ -69,6 +71,14 @@ class PathInfo extends React.Component {
     });
   }
 
+  tag = () => {
+    this.props.navigation.dispatch(
+        CommonActions.navigate('Tagging', {
+        })
+      );
+    this.setModalVisible();
+  }
+
 	render() {
     if (this.state.myPath) {
   		return (
@@ -80,16 +90,15 @@ class PathInfo extends React.Component {
                 onPressOut={this.setModalVisible}
               >
                 <View style={styles.modalView}>
-
                   <View style={styles.descriptionView}>
                     <Text>NetID: {this.state.netid}</Text>
                     <Text>Path Name: { this.state.pathName }</Text>
                     <Text>Risk: { this.state.risk }</Text>
                   </View>
-
-                  <View style={styles.tagView}>
-                    <Text>Tags: add here probably can use the reactnativetags</Text>
-                  </View>
+                  
+                  <TouchableOpacity style={styles.tagView} onPress={this.tag}>
+                    <Text>Add Tags</Text>
+                  </TouchableOpacity>
 
                   <TouchableOpacity style = {styles.deleteBtn} onPress={this.props.deletePath} >
                     <Text> Delete Path </Text>
@@ -149,6 +158,12 @@ const styles = StyleSheet.create({
     margin: 5
   },
   tagView: {
+    borderWidth: 1,
+    borderColor: "black",
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
     margin: 5
   },
   deleteBtn: {
