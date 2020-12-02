@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { BACKEND_URL, MONGO_URL } from './ApiConfig'
 
-export const login = (net_id) => {
+export const getUser = (net_id) => {
     let data = new FormData()
     data.append('net_id', net_id)
     return axios
