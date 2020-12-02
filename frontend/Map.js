@@ -6,9 +6,6 @@ import { CommonActions } from '@react-navigation/native';
 import { createLocation, deleteLocation, getAllLocation } from './utility/ApiWrapper';
 import PathInfo from './PathInfo';
 
-const HARDCODED_NETID = "Test"
-
-
 // hardcoded to start in UIUC
 const LATITUDE = 40.1020;
 const LONGITUDE = -88.2272;
@@ -45,7 +42,7 @@ class Map extends React.Component {
     selectedPath: -1,
     isLoading: true,
     currPathCoord: "",
-    netid: HARDCODED_NETID // TODO CHANGE
+    netid: prop.netid
    };
 
    this.goToUser = this.goToUser.bind(this)
@@ -78,7 +75,7 @@ class Map extends React.Component {
 
       response = await createLocation(
                   allCoord,
-                  HARDCODED_NETID,
+                  this.state.netid,
                   "unknown",
                   "----",
                   allDurations);
@@ -170,7 +167,7 @@ class Map extends React.Component {
   deletePath = async () => {
     // TODO add delete path from database here
     const { pastRoutes, selectedPath, currPathCoord } = this.state;
-    response = await deleteLocation(allCoord, HARDCODED_NETID); //TODO remove
+    response = await deleteLocation(allCoord, this.prop.netid); //TODO remove
     console.log(response);
 
     pastRoutes.splice(selectedPath, 1);

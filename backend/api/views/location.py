@@ -7,6 +7,38 @@ from datetime import datetime
 
 location = Blueprint("location", __name__)
 
+@location.route("/all_location", methods=["GET"])
+def get_all_location():
+    """
+    get all location
+    """
+    # gets database values from query string, if missing is None
+    sql = """SELECT * FROM location;"""
+    conn = None
+    try:
+        params = config()
+        conn = psycopg2.connect(**params)
+        cur = conn.cursor()
+        cur.execute(sql)
+        print("here")
+        items = cur.fetchone()
+        print(items)
+        conn.commit()
+        cur.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        return create_response(status=500, message=error)
+    finally:
+        if conn is not None:
+            conn.close()
+    
+    output = {}
+    if items != None:
+        output = {"coordinates": items[0], "net_id": items[1], "risk": items[2], "location_name": items[3], "time_spent": items[4]}
+    return create_response(
+        status=200,
+        data=output,
+    )
+
 
 @location.route("/get_location", methods=["POST"])
 def get_location():
