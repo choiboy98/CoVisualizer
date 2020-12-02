@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 // import React from 'react';
 import React, { useState, Component } from "react";
 import { StyleSheet, Text, View, TextInput, Switch, TouchableOpacity} from 'react-native';
-import { login, createUser } from './utility/ApiWrapper'
+import { createUser } from './utility/ApiWrapper'
 import { CommonActions } from '@react-navigation/native';
 
 
@@ -25,14 +25,14 @@ export default class RegistrationScreen extends Component {
     };
 
     async register() {
-        console.log(this.state.email)
-        result = await createUser(this.state.username, this.state.name, this.state.email, this.state.password, "False");
-        console.log(result);
-        this.props.navigation.dispatch(
-            CommonActions.navigate({
-              name: 'Map',
-            })
-          );
+        result = await createUser(this.state.username, this.state.name, this.state.email.toLocaleLowerCase(), this.state.password, toString(this.state.toggle));
+        // if (result.type == "CREATE_SUCCESSFUL") {
+          this.props.navigation.dispatch(
+              CommonActions.navigate({
+                name: 'Map',
+              })
+            );
+          // }
     }
 
     // const [isEnabled, setIsEnabled] = useState(false);

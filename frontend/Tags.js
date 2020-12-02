@@ -18,6 +18,7 @@ class Tag extends Component {
 
   async componentDidMount() {
     // getTag(null, this.state.currPath)
+    
   }
 
   renderTag = ({ tag, index, onPress, deleteTagOnPress, readonly }) => {

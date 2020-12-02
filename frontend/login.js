@@ -21,20 +21,17 @@ export default class LoginScreen extends Component {
     };
 
     async login() {
-        console.log(this.state.email)
-        result = await login(this.state.email);
-        console.log(result);
+      result = await getUser(this.state.email.toLowerCase());
+      if (result.type == "LOGIN_SUCCESSFUL") {
         this.props.navigation.dispatch(
-            CommonActions.navigate({
-              name: 'Map',
+            CommonActions.navigate('Map', {
+              netid: this.state.email.toLowerCase()
             })
           );
+      }
     }
 
     async register() {
-        // console.log(this.state.email)
-        // result = await createUser(this.state.email, this.state.email, this.state.email, this.state.email, "False");
-        // console.log(result);
         this.props.navigation.dispatch(
             CommonActions.navigate({
               name: 'Signup',
