@@ -43,6 +43,27 @@ class PathInfo extends React.Component {
     this.props.exitModal();
   }
 
+  MyTagInput = () => {
+    <Tags
+      initialText="Infected"
+      textInputProps={{
+        placeholder: "Pertinent info"
+      }}
+      initialTags={["15 minutes", "sick", "be safe!"]}
+      onChangeTags={tags => console.log(tags)}
+      onTagPress={(index, tagLabel, event, deleted) =>
+        console.log(index, tagLabel, event, deleted ? "deleted" : "not deleted")
+      }
+      containerStyle={{ justifyContent: "center" }}
+      inputStyle={{ backgroundColor: "white" }}
+      renderTag={({ tag, index, onPress, deleteTagOnPress, readonly }) => (
+        <TouchableOpacity key={`${tag}-${index}`} onPress={onPress}>
+          <Text>{tag}</Text>
+        </TouchableOpacity>
+      )}
+    />
+  };
+
   getPathInfo = async (currPathCoord, netid, modalVisible) => {
     if (modalVisible && !this.state.fetching) {
       this.setState({ fetching: true });
@@ -83,9 +104,9 @@ class PathInfo extends React.Component {
                   <Text>Risk: { this.state.risk }</Text>
                 </View>
 
-                <View style={styles.tagView}>
+                <TouchableOpacity style={styles.tagView} onPress={this.props.MyTagInput}>
                   <Text>Tags: add here probably can use the reactnativetags</Text>
-                </View>
+                </TouchableOpacity>
 
                 <TouchableOpacity style = {styles.deleteBtn} onPress={this.props.deletePath} >
                   <Text> Delete Path </Text>
