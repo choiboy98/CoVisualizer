@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { StyleSheet, Text, View, TextInput, TouchableOpacity} from 'react-native';
-import { updateUser, login } from './utility/ApiWrapper'
+import { updateUser, getUser } from './utility/ApiWrapper'
 import { CommonActions } from '@react-navigation/native';
 import ToggleSwitch from 'toggle-switch-react-native'
 
@@ -20,7 +20,7 @@ export default class UserScreen extends React.Component {
     }
 
     async componentDidMount() {
-        result = await login(this.state.netid);
+        result = await getUser(this.state.netid);
         if (result.type == "LOGIN_SUCCESSFUL") {
             data = result.response.data.result;
             console.log(data)
