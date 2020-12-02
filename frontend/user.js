@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { StyleSheet, Text, View, TextInput, TouchableOpacity} from 'react-native';
-import { updateUser } from './utility/ApiWrapper'
+import { updateUser, login } from './utility/ApiWrapper'
 import { CommonActions } from '@react-navigation/native';
 import ToggleSwitch from 'toggle-switch-react-native'
 
@@ -8,20 +8,37 @@ export default class UserScreen extends React.Component {
     constructor(props) {
         super(props)
 
+        netid = this.props.route.params.netid;
         this.state = {
-            phoneNum: "",
-            description: "",
+            phone: "N/A",
             isOn: false,
-            email: "Test"
+            netid: netid,
+            email: "N/A",
+            name: "N/A"
         }
         this.updateInfected = this.updateInfected.bind(this);
+    }
+
+    async componentDidMount() {
+        result = await login(this.state.netid);
+        if (result.type == "LOGIN_SUCCESSFUL") {
+            data = result.response.data.result;
+            console.log(data)
+            this.setState({
+                phone: data.phone,
+                isOn: data.infected == "true" ? true : false,
+                email: data.email,
+                name: data.name
+            });
+        }
     }
 
     async updateInfected() {
         console.log(this.state.isOn)
         this.setState({isOn: !this.state.isOn})
         console.log(this.state.isOn)
-        result = await updateUser(this.state.email, !this.state.isOn + "");
+        result = await updateUser(this.state.netid, !this.state.isOn + "");
+        console.log(result)
     }
 
     render() {
@@ -29,8 +46,10 @@ export default class UserScreen extends React.Component {
         //Get email from backend and set it to variable email
         return (
             <View style={styles.container}>
-              <Text style = {styles.initText}>Username: username goes here</Text>
-              <Text style = {styles.initText}>Email: email goes here</Text>
+              <Text style = {styles.initText}>Name: { this.state.name }</Text>
+              <Text style = {styles.initText}>NetId: { this.state.netid }</Text>
+              <Text style = {styles.initText}>Email: { this.state.email }</Text>
+              <Text style = {styles.initText}>Phone: { this.state.phone }</Text>
               
               <ToggleSwitch
                 isOn={this.state.isOn}
