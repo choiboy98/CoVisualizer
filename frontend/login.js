@@ -32,9 +32,9 @@ export default class LoginScreen extends Component {
     }
 
     async register() {
-        console.log(this.state.email)
-        result = await createUser(this.state.email, this.state.email, this.state.email, this.state.email, "False");
-        console.log(result);
+        // console.log(this.state.email)
+        // result = await createUser(this.state.email, this.state.email, this.state.email, this.state.email, "False");
+        // console.log(result);
         this.props.navigation.dispatch(
             CommonActions.navigate({
               name: 'Signup',
