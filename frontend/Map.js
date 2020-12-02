@@ -43,7 +43,9 @@ class Map extends React.Component {
     isLoading: true,
     currPathCoord: "",
     netid: props.route.params.netid,
-    infected: this.props.route.params.infected
+    infected: this.props.route.params.infected,
+    myPath: false,
+    selectedPathNetid: ""
    };
 
    this.goToUser = this.goToUser.bind(this)
@@ -93,7 +95,8 @@ class Map extends React.Component {
       this.setState({
         isTracking: false,
         routeCoordinates: [],
-        pastRoutes: pastRoutes.concat([{"route" : routeCoordinates, 
+        pastRoutes: pastRoutes.concat([{"netid" : this.state.netid,
+                                        "route" : routeCoordinates, 
                                         "duration" : duration.concat([new Date().getTime() - start_duration])}]),
         duration: []
       });
@@ -104,7 +107,7 @@ class Map extends React.Component {
     console.log(this.state.netid)
     let allLocation = await getAllLocation()
     if (allLocation.type == "GET_SUCCESSFUL") {
-      console.log(allLocation.response.data.result.result)
+      // console.log(allLocation.response.data.result.result)
       this.setState({pastRoutes: allLocation.response.data.result.result})
     }
     this.setState({isLoading: false})
@@ -147,7 +150,7 @@ class Map extends React.Component {
       setInterval(async () => {
         let updatedLocation = await getAllLocation()
         if (updatedLocation.type == "GET_SUCCESSFUL") {
-          console.log(updatedLocation.response.data.result.result)
+          // console.log(updatedLocation.response.data.result.result)
           this.setState({pastRoutes: updatedLocation.response.data.result.result})
         }
       }, 30000);
@@ -176,12 +179,16 @@ class Map extends React.Component {
     allCoord = pastRoutes[id]["route"].map(coord => {
         return coord.latitude + "," + coord.longitude;
       }).join("|");
+    isMyPath = pastRoutes[id]["netid"] == this.state.netid
+    selectedNetid = pastRoutes[id]["netid"]
     // console.log(pastRoutes)
     console.log(allCoord);
     this.setState({
       modalVisible : true,
       selectedPath: id,
-      currPathCoord: allCoord
+      currPathCoord: allCoord,
+      myPath: isMyPath,
+      selectedPathNetid: selectedNetid
     });
   }
 
@@ -222,7 +229,7 @@ class Map extends React.Component {
       return (
         <View style={styles.container}>
 
-          <PathInfo deletePath={ this.deletePath } modalVisible={ this.state.modalVisible } netid={ this.state.netid }
+          <PathInfo deletePath={ this.deletePath } modalVisible={ this.state.modalVisible } netid={ this.state.selectedPathNetid } myPath={this.state.myPath}
                         currPathCoord={ this.state.currPathCoord } exitModal={this.exitModal} navigation={ this.props.navigation }/>
 
           <MapView ref={this.state.mapRef} provider={PROVIDER_GOOGLE} style={{ ...StyleSheet.absoluteFillObject }} initialRegion={this.getMapRegion()}
