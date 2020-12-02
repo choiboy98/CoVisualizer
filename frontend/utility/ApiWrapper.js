@@ -13,9 +13,10 @@ export const login = (net_id) => {
         }
       })
       .catch(error => {
+        err = error.response;
         return {
           type: 'LOGIN_FAIL',
-          error
+          err
         }
       })
   }

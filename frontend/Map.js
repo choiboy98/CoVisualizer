@@ -6,8 +6,6 @@ import { CommonActions } from '@react-navigation/native';
 import { createLocation, deleteLocation, getAllLocation } from './utility/ApiWrapper';
 import PathInfo from './PathInfo';
 
-const HARDCODED_NETID = "Test"
-
 
 // hardcoded to start in UIUC
 const LATITUDE = 40.1020;
@@ -45,7 +43,7 @@ class Map extends React.Component {
     selectedPath: -1,
     isLoading: true,
     currPathCoord: "",
-    netid: HARDCODED_NETID // TODO CHANGE
+    netid: this.props.route.params.netid // TODO CHANGE
    };
 
    this.goToUser = this.goToUser.bind(this)
@@ -78,7 +76,7 @@ class Map extends React.Component {
 
       response = await createLocation(
                   allCoord,
-                  HARDCODED_NETID,
+                  this.state.netid,
                   "unknown",
                   "----",
                   allDurations);
@@ -170,7 +168,7 @@ class Map extends React.Component {
   deletePath = async () => {
     // TODO add delete path from database here
     const { pastRoutes, selectedPath, currPathCoord } = this.state;
-    response = await deleteLocation(allCoord, HARDCODED_NETID); //TODO remove
+    response = await deleteLocation(allCoord, this.state.netid);
     console.log(response);
 
     pastRoutes.splice(selectedPath, 1);
@@ -205,7 +203,7 @@ class Map extends React.Component {
         <View style={styles.container}>
 
           <PathInfo deletePath={ this.deletePath } modalVisible={ this.state.modalVisible } netid={ this.state.netid }
-                        currPathCoord={ this.state.currPathCoord } exitModal={this.exitModal}/>
+                        currPathCoord={ this.state.currPathCoord } exitModal={this.exitModal} navigation={ this.props.navigation }/>
 
           <MapView ref={this.state.mapRef} provider={PROVIDER_GOOGLE} style={{ ...StyleSheet.absoluteFillObject }} initialRegion={this.getMapRegion()}
                           showsUserLocation={true} showsMyLocationButton={true} onUserLocationChange={this.followUser}>
