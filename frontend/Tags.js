@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
 import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 import Tags from 'react-native-tags';
-import { getTags, createTag, deleteTag } from './utility/ApiWrapper';
+import { getTag, createTag, deleteTag } from './utility/ApiWrapper';
 
 class Tag extends Component {
 
@@ -18,7 +18,16 @@ class Tag extends Component {
 
   async componentDidMount() {
     // getTag(null, this.state.currPath)
-    
+    result = await getTag(null, this.state.path)
+
+    // if (result.type == "GET_TAG_SUCCESSFUL") {
+    //   data = this.state.initialTags;
+    //   console.log(data)
+    //   this.setState({
+    //     initialTags: data,
+    //     tagIds : initialTags
+    //   });
+    // }
   }
 
   renderTag = ({ tag, index, onPress, deleteTagOnPress, readonly }) => {

@@ -26,6 +26,7 @@ export default class RegistrationScreen extends Component {
 
     async register() {
         result = await createUser(this.state.username, this.state.name, this.state.email.toLocaleLowerCase(), this.state.password, toString(this.state.toggle));
+        console.log(result);
         // if (result.type == "CREATE_SUCCESSFUL") {
           this.props.navigation.dispatch(
               CommonActions.navigate({
@@ -44,18 +45,22 @@ export default class RegistrationScreen extends Component {
             <TextInput 
                 style = {styles.input}
                 placeholder = "Username"
+                onChangeText={(text) => this.setState({ username: text})}
             />
             <TextInput 
                 style = {styles.input}
                 placeholder = "Name"
+                onChangeText={(text) => this.setState({ name: text})}
             />
             <TextInput 
                 style = {styles.input}
                 placeholder = "Email"
+                onChangeText={(text) => this.setState({ email: text})}
             />
             <TextInput 
                 style = {styles.input}
                 placeholder = "Password"
+                onChangeText={(text) => this.setState({ password: text})}
                 secureTextEntry
             />
             <Text style = {styles.switchText}>Infected?</Text>
