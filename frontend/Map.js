@@ -42,7 +42,7 @@ class Map extends React.Component {
     selectedPath: -1,
     isLoading: true,
     currPathCoord: "",
-    netid: props.netid
+    netid: props.route.params.netid
    };
 
    this.goToUser = this.goToUser.bind(this)
@@ -94,10 +94,11 @@ class Map extends React.Component {
   }
 
   async componentDidMount() {
+    console.log(this.state.netid)
     let allLocation = await getAllLocation()
     if (allLocation.type == "GET_SUCCESSFUL") {
-      console.log(allLocation)
-      // this.setState({pastRoutes: allLocation.response.result})
+      console.log(allLocation.response.data.result.result)
+      this.setState({pastRoutes: allLocation.response.data.result.result})
     }
     this.setState({isLoading: false})
     navigator.geolocation.getCurrentPosition(
@@ -135,8 +136,19 @@ class Map extends React.Component {
 
       }
     );
+    try {
+      setInterval(async () => {
+        let updatedLocation = await getAllLocation()
+        if (updatedLocation.type == "GET_SUCCESSFUL") {
+          console.log(updatedLocation.response.data.result.result)
+          this.setState({pastRoutes: updatedLocation.response.data.result.result})
+        }
+      }, 30000);
+    } catch(e) {
+      console.log(e);
+    }
   }
-
+  
   followUser = () => {
     if (this.state.isTracking) {
       // TODO make smooth
@@ -208,9 +220,13 @@ class Map extends React.Component {
           <MapView ref={this.state.mapRef} provider={PROVIDER_GOOGLE} style={{ ...StyleSheet.absoluteFillObject }} initialRegion={this.getMapRegion()}
                           showsUserLocation={true} showsMyLocationButton={true} onUserLocationChange={this.followUser}>
               { this.state.pastRoutes.map((prop, id) => {
-                return <Polyline key={id} coordinates={prop["route"]} strokeWidth={3} lineJoin={"miter"} tappable={ true }
+                if (prop["netid"] != this.state.netid) {
+                  return <Polyline key={id} coordinates={prop["route"]} strokeWidth={3} lineJoin={"miter"} tappable={ true }
+                  strokeColor={ "blue" } onPress={ () => this.pressPath(id) }/>
+                } else {
+                  return <Polyline key={id} coordinates={prop["route"]} strokeWidth={3} lineJoin={"miter"} tappable={ true }
                               strokeColor={ "red" } onPress={ () => this.pressPath(id) }/>
-  
+                }
               })}
               { this.drawPath() }
           </MapView>
