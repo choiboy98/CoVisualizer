@@ -8,7 +8,7 @@ from datetime import datetime
 person = Blueprint("person", __name__)
 
 
-@person.route("/create_person", methods=["POST"])
+@person.route("/person", methods=["GET"])
 def get_person():
     """
     get person based on net_id
