@@ -2,17 +2,30 @@ import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
 import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 import Tags from 'react-native-tags';
+import { getTags, createTag, deleteTag } from './utility/ApiWrapper';
 
 class Tag extends Component {
+
   constructor(props) {
     super(props);
     this.state = {
       initialTags: ['Infected', 'Avoid!'],
       initialText: '',
+      currPath: this.props.route.params.path,
+      tagIds: []
     };
   }
 
+  async componentDidMount() {
+    // getTag(null, this.state.currPath)
+  }
+
   renderTag = ({ tag, index, onPress, deleteTagOnPress, readonly }) => {
+    // console.log(tag)
+    // createTag(this.state.currPath, null, tag)
+    // response should object with tag id 
+    // add tag -> this.state.tagIds
+    //          this.setState({
     return (
       <TouchableOpacity
         key={`${tag}-${index}`}
@@ -44,6 +57,7 @@ class Tag extends Component {
   }
 
   onTagPress = (index, tagLabel, event, deleted) => {
+    // deleteTag(this.state.tagIds[index], this.state.currPathCoord)
     console.log(index, tagLabel, event, deleted ? 'deleted' : 'not deleted');
   };
 

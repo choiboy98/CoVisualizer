@@ -70,8 +70,8 @@ class PathInfo extends React.Component {
 
   tag = () => {
     this.props.navigation.dispatch(
-        CommonActions.navigate({
-          name: 'Tagging',
+        CommonActions.navigate('Tagging', {
+          path: this.states.currPathCoord,
         })
       );
     this.setModalVisible();
