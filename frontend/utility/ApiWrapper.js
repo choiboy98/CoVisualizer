@@ -1,11 +1,11 @@
 import axios from 'axios'
 import { BACKEND_URL, MONGO_URL } from './ApiConfig'
 
-export const login = (net_id) => {
+export const getUser = (net_id) => {
     let data = new FormData()
     data.append('net_id', net_id)
     return axios
-      .post(BACKEND_URL + '/create_person', data)
+      .get(BACKEND_URL + '/person/'+ net_id)
       .then(response => {
         return {
           type: 'LOGIN_SUCCESSFUL',
@@ -13,9 +13,10 @@ export const login = (net_id) => {
         }
       })
       .catch(error => {
+        err = error.response;
         return {
           type: 'LOGIN_FAIL',
-          error
+          err
         }
       })
   }
@@ -66,7 +67,7 @@ export const updateUser = (net_id, infected) => {
 
   export const getAllLocation = () => {
     return axios
-      .get(BACKEND_URL + '/get_all_location')
+      .get(BACKEND_URL + '/all_location')
       .then(response => {
         return {
           type: 'GET_SUCCESSFUL',

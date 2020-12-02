@@ -7,6 +7,63 @@ from datetime import datetime
 
 location = Blueprint("location", __name__)
 
+@location.route("/all_location", methods=["GET"])
+def get_all_location():
+    """
+    get all location
+    """
+    # gets database values from query string, if missing is None
+    sql = """SELECT coordinates, time_spent, net_id FROM location;"""
+    conn = None
+    try:
+        params = config()
+        conn = psycopg2.connect(**params)
+        cur = conn.cursor()
+        cur.execute(sql)
+        print("here")
+        items = cur.fetchall()
+        print(items)
+        conn.commit()
+        cur.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        return create_response(status=500, message=error)
+    finally:
+        if conn is not None:
+            conn.close()
+    
+    if items != None:
+        result = []
+        for entry in items:
+            output = {}
+            output_route = []
+            output_dur = []
+            
+            stored_routes = entry[0]
+            stored_duration = entry[1]
+            
+            stored_routes = stored_routes.split("|")
+            stored_duration = stored_duration.split("|")
+            for route in stored_routes:
+                temp = {}
+                curr = route.split(",")
+                temp["latitude"] = float(curr[0])
+                temp["longitude"] = float(curr[1])
+                output_route.append(temp)
+            for dur in stored_duration:
+                output_dur.append(int(dur))
+            output["duration"] = output_dur
+            output["route"] = output_route
+            output["netid"] = entry[2]
+            result.append(output)
+        return create_response(
+            status=200,
+            data={"result": result},
+        )
+    return create_response(
+        status=400,
+        data=None,
+    )
+
 
 @location.route("/get_location", methods=["POST"])
 def get_location():

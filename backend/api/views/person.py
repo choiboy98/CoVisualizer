@@ -8,16 +8,12 @@ from datetime import datetime
 person = Blueprint("person", __name__)
 
 
-@person.route("/create_person", methods=["POST"])
-def get_person():
+@person.route("/person/<id>", methods=["GET"])
+def get_person(id):
     """
     get person based on net_id
     """
     # gets database values from query string, if missing is None
-    data = request.form
-    if data is None:
-        return create_response(status=400, message="No body provided for new person")
-    net_id = data.get("net_id")
     sql = """SELECT * FROM person WHERE net_id = %s;"""
     conn = None
     items = None
@@ -25,7 +21,7 @@ def get_person():
         params = config()
         conn = psycopg2.connect(**params)
         cur = conn.cursor()
-        cur.execute(sql, (net_id,))
+        cur.execute(sql, (id,))
         items = cur.fetchone()
         conn.commit()
         cur.close()

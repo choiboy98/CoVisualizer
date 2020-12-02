@@ -3,11 +3,8 @@ import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Modal, ActivityIndicator } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 import { CommonActions } from '@react-navigation/native';
-import { createLocation, deleteLocation, getAllLocation } from './utility/ApiWrapper';
+import { createLocation, deleteLocation, getAllLocation, getUser } from './utility/ApiWrapper';
 import PathInfo from './PathInfo';
-
-const HARDCODED_NETID = "Test"
-
 
 // hardcoded to start in UIUC
 const LATITUDE = 40.1020;
@@ -45,7 +42,10 @@ class Map extends React.Component {
     selectedPath: -1,
     isLoading: true,
     currPathCoord: "",
-    netid: HARDCODED_NETID // TODO CHANGE
+    netid: props.route.params.netid,
+    infected: this.props.route.params.infected,
+    myPath: false,
+    selectedPathNetid: ""
    };
 
    this.goToUser = this.goToUser.bind(this)
@@ -76,11 +76,17 @@ class Map extends React.Component {
       }).join("|");
       allDurations = duration.concat([new Date().getTime() - start_duration]).join("|");
 
+      result = await getUser(this.state.netid);
+      risk_lvl = "unknown"
+      if (result.type == "LOGIN_SUCCESSFUL") {
+          risk_lvl = result.response.data.result.infected == "true" ? "high" : "low";
+      }
+      console.log(this.state.infected)
       response = await createLocation(
                   allCoord,
-                  HARDCODED_NETID,
-                  "unknown",
-                  "----",
+                  this.state.netid,
+                  risk_lvl,
+                  "Walk",
                   allDurations);
       console.log(response);
 
@@ -89,7 +95,8 @@ class Map extends React.Component {
       this.setState({
         isTracking: false,
         routeCoordinates: [],
-        pastRoutes: pastRoutes.concat([{"route" : routeCoordinates, 
+        pastRoutes: pastRoutes.concat([{"netid" : this.state.netid,
+                                        "route" : routeCoordinates, 
                                         "duration" : duration.concat([new Date().getTime() - start_duration])}]),
         duration: []
       });
@@ -97,9 +104,11 @@ class Map extends React.Component {
   }
 
   async componentDidMount() {
+    console.log(this.state.netid)
     let allLocation = await getAllLocation()
     if (allLocation.type == "GET_SUCCESSFUL") {
-      this.setState({pastRoutes: allLocation.response})
+      // console.log(allLocation.response.data.result.result)
+      this.setState({pastRoutes: allLocation.response.data.result.result})
     }
     this.setState({isLoading: false})
     navigator.geolocation.getCurrentPosition(
@@ -137,8 +146,19 @@ class Map extends React.Component {
 
       }
     );
+    try {
+      setInterval(async () => {
+        let updatedLocation = await getAllLocation()
+        if (updatedLocation.type == "GET_SUCCESSFUL") {
+          // console.log(updatedLocation.response.data.result.result)
+          this.setState({pastRoutes: updatedLocation.response.data.result.result})
+        }
+      }, 30000);
+    } catch(e) {
+      console.log(e);
+    }
   }
-
+  
   followUser = () => {
     if (this.state.isTracking) {
       // TODO make smooth
@@ -148,8 +168,8 @@ class Map extends React.Component {
 
   goToUser() {
     this.props.navigation.dispatch(
-      CommonActions.navigate({
-        name: 'User',
+      CommonActions.navigate('User', {
+        netid: this.state.netid,
       })
     )
   }
@@ -159,18 +179,23 @@ class Map extends React.Component {
     allCoord = pastRoutes[id]["route"].map(coord => {
         return coord.latitude + "," + coord.longitude;
       }).join("|");
+    isMyPath = pastRoutes[id]["netid"] == this.state.netid
+    selectedNetid = pastRoutes[id]["netid"]
+    // console.log(pastRoutes)
     console.log(allCoord);
     this.setState({
       modalVisible : true,
       selectedPath: id,
-      currPathCoord: allCoord
+      currPathCoord: allCoord,
+      myPath: isMyPath,
+      selectedPathNetid: selectedNetid
     });
   }
 
   deletePath = async () => {
     // TODO add delete path from database here
     const { pastRoutes, selectedPath, currPathCoord } = this.state;
-    response = await deleteLocation(allCoord, HARDCODED_NETID); //TODO remove
+    response = await deleteLocation(currPathCoord, this.state.netid);
     console.log(response);
 
     pastRoutes.splice(selectedPath, 1);
@@ -204,15 +229,20 @@ class Map extends React.Component {
       return (
         <View style={styles.container}>
 
-          <PathInfo deletePath={ this.deletePath } modalVisible={ this.state.modalVisible } netid={ this.state.netid }
+
+          <PathInfo deletePath={ this.deletePath } modalVisible={ this.state.modalVisible } netid={ this.state.selectedPathNetid } myPath={this.state.myPath}
                         currPathCoord={ this.state.currPathCoord } exitModal={this.exitModal} navigation={ this.props.navigation }/>
 
           <MapView ref={this.state.mapRef} provider={PROVIDER_GOOGLE} style={{ ...StyleSheet.absoluteFillObject }} initialRegion={this.getMapRegion()}
                           showsUserLocation={true} showsMyLocationButton={true} onUserLocationChange={this.followUser}>
               { this.state.pastRoutes.map((prop, id) => {
-                return <Polyline key={id} coordinates={prop["route"]} strokeWidth={3} lineJoin={"miter"} tappable={ true }
+                if (prop["netid"] != this.state.netid) {
+                  return <Polyline key={id} coordinates={prop["route"]} strokeWidth={3} lineJoin={"miter"} tappable={ true }
+                  strokeColor={ "blue" } onPress={ () => this.pressPath(id) }/>
+                } else {
+                  return <Polyline key={id} coordinates={prop["route"]} strokeWidth={3} lineJoin={"miter"} tappable={ true }
                               strokeColor={ "red" } onPress={ () => this.pressPath(id) }/>
-  
+                }
               })}
               { this.drawPath() }
           </MapView>

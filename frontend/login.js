@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity} from 'react-native';
-import { login, createUser } from './utility/ApiWrapper'
+import { getUser, createUser } from './utility/ApiWrapper'
 import { CommonActions } from '@react-navigation/native';
 
 
@@ -21,17 +21,20 @@ export default class LoginScreen extends Component {
     };
 
     async login() {
-      result = await login(this.state.email.toLowerCase());
-      // if (result.type == "LOGIN_SUCCESSFUL") {
-        this.props.navigation.dispatch(
-            CommonActions.navigate('Map', {
-              netid: this.state.email.toLowerCase()
-            })
-          );
-      // }
+        result = await getUser(this.state.email.toLowerCase());
+        if (result.type == "LOGIN_SUCCESSFUL") {
+          this.props.navigation.dispatch(
+              CommonActions.navigate('Map', {
+                netid: this.state.email.toLowerCase()
+              })
+            );
+        }
     }
 
     async register() {
+        console.log(this.state.email)
+        result = await createUser(this.state.email, this.state.email, this.state.email, this.state.email, "false");
+        console.log(result);
         this.props.navigation.dispatch(
             CommonActions.navigate({
               name: 'Signup',
