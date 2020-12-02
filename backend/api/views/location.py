@@ -13,7 +13,7 @@ def get_all_location():
     get all location
     """
     # gets database values from query string, if missing is None
-    sql = """SELECT * FROM location;"""
+    sql = """SELECT coordinates, risk FROM location;"""
     conn = None
     try:
         params = config()
@@ -21,7 +21,7 @@ def get_all_location():
         cur = conn.cursor()
         cur.execute(sql)
         print("here")
-        items = cur.fetchone()
+        items = cur.fetchall()
         print(items)
         conn.commit()
         cur.close()
@@ -31,12 +31,17 @@ def get_all_location():
         if conn is not None:
             conn.close()
     
-    output = {}
     if items != None:
-        output = {"coordinates": items[0], "net_id": items[1], "risk": items[2], "location_name": items[3], "time_spent": items[4]}
+        output = {}
+        for entry in items:
+            output[entry[0]] = entry[1]
+        return create_response(
+            status=200,
+            data=output,
+        )
     return create_response(
         status=200,
-        data=output,
+        data=None,
     )
 
 

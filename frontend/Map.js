@@ -6,10 +6,6 @@ import { CommonActions } from '@react-navigation/native';
 import { createLocation, deleteLocation, getAllLocation } from './utility/ApiWrapper';
 import PathInfo from './PathInfo';
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 9dc75d2d256c2639f92c9412e9570e8c2835f52e
 // hardcoded to start in UIUC
 const LATITUDE = 40.1020;
 const LONGITUDE = -88.2272;
@@ -46,7 +42,7 @@ class Map extends React.Component {
     selectedPath: -1,
     isLoading: true,
     currPathCoord: "",
-    netid: prop.netid
+    netid: props.netid
    };
 
    this.goToUser = this.goToUser.bind(this)
@@ -100,7 +96,8 @@ class Map extends React.Component {
   async componentDidMount() {
     let allLocation = await getAllLocation()
     if (allLocation.type == "GET_SUCCESSFUL") {
-      this.setState({pastRoutes: allLocation.response})
+      console.log(allLocation)
+      // this.setState({pastRoutes: allLocation.response.result})
     }
     this.setState({isLoading: false})
     navigator.geolocation.getCurrentPosition(
