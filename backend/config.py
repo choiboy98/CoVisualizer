@@ -1,11 +1,5 @@
 from configparser import ConfigParser
 
-host = ec2-54-237-135-248.compute-1.amazonaws.com
-port = 5432
-database = d17l9p893dpigs
-user = juiyohnqtfmjup
-password = 003e8b8e1d2abc82b3dc4042ea5303dea0c42f8dc7c0380ddfbddcc12cb23c31
-
 def config(filename='database.ini', section='postgresql'):
     # create a parser
     parser = ConfigParser()
