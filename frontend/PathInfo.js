@@ -113,10 +113,6 @@ class PathInfo extends React.Component {
                       <View style={styles.descriptionView}>
                         <Text>Risk: { this.state.risk }</Text>
                       </View>
-
-                      <View style={styles.tagView}>
-                        <Text>Tags: add here probably can use the reactnativetags</Text>
-                      </View>
                   </View>
                   </TouchableOpacity>
                 </Modal>
