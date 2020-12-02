@@ -146,8 +146,8 @@ class Map extends React.Component {
 
   goToUser() {
     this.props.navigation.dispatch(
-      CommonActions.navigate({
-        name: 'User',
+      CommonActions.navigate('User', {
+        netid: this.state.netid,
       })
     )
   }
