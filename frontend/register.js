@@ -26,7 +26,7 @@ export default class RegistrationScreen extends Component {
     };
 
     async register() {
-        result = await createUser(this.state.username.toLocaleLowerCase(), this.state.name, this.state.email.toLocaleLowerCase(), this.state.phone, toString(this.state.toggle));
+        result = await createUser(this.state.username.toLocaleLowerCase(), this.state.name, this.state.email.toLocaleLowerCase(), this.state.phone, this.state.toggle+"");
         console.log(result);
         if (result.type == "CREATE_SUCCESSFUL") {
           this.props.navigation.dispatch(
