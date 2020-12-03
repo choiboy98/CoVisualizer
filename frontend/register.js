@@ -15,6 +15,7 @@ export default class RegistrationScreen extends Component {
             name: "",
             email: "",
             password: "",
+            phone: "",
             toggle: false,
         };
         this.register = this.register.bind(this)
@@ -25,15 +26,15 @@ export default class RegistrationScreen extends Component {
     };
 
     async register() {
-        result = await createUser(this.state.username, this.state.name, this.state.email.toLocaleLowerCase(), this.state.password, toString(this.state.toggle));
+        result = await createUser(this.state.username.toLocaleLowerCase(), this.state.name, this.state.email.toLocaleLowerCase(), this.state.phone, toString(this.state.toggle));
         console.log(result);
-        // if (result.type == "CREATE_SUCCESSFUL") {
+        if (result.type == "CREATE_SUCCESSFUL") {
           this.props.navigation.dispatch(
-              CommonActions.navigate({
-                name: 'Map',
+              CommonActions.navigate('Map', {
+                netid: this.state.username,
               })
             );
-          // }
+          }
     }
 
     // const [isEnabled, setIsEnabled] = useState(false);
@@ -56,6 +57,11 @@ export default class RegistrationScreen extends Component {
                 style = {styles.input}
                 placeholder = "Email"
                 onChangeText={(text) => this.setState({ email: text})}
+            />
+            <TextInput 
+                style = {styles.input}
+                placeholder = "Phone Number"
+                onChangeText={(text) => this.setState({ phone: text})}
             />
             <TextInput 
                 style = {styles.input}
