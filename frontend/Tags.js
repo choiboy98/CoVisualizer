@@ -19,7 +19,6 @@ class Tag extends Component {
   async componentDidMount() {
     // getTag(null, this.state.currPath)
     result = await getTag(null, this.state.path)
-
     // if (result.type == "GET_TAG_SUCCESSFUL") {
     //   data = this.state.initialTags;
     //   console.log(data)
@@ -32,10 +31,16 @@ class Tag extends Component {
 
   renderTag = ({ tag, index, onPress, deleteTagOnPress, readonly }) => {
     // console.log(tag)
-    // createTag(this.state.currPath, null, tag)
+    // result = await createTag(this.state.currPath, null, tag)
+    // if (result.type == "CREATE_TAG_SUCCESSFUL") {
+    //   data = result.response.data.result;
+    //   this.setState( {
+    //     tagIds: data.tag
+    //   })
+    // }
     // response should object with tag id 
     // add tag -> this.state.tagIds
-    //          this.setState({
+            //  this.setState({
     return (
       <TouchableOpacity
         key={`${tag}-${index}`}
