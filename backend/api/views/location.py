@@ -202,3 +202,31 @@ def delete_location(id):
             conn.close()
 
     return create_response(status=200, message="successfully deleted location")
+
+@location.route("/location/<risk>", methods=["risklevel"])
+def risklevel(id):
+    """
+    determine the risk level of the current path
+    """
+    data = request.form
+    if len(data) == 0:
+        return create_response(status=400, message="No body provided for location")
+
+    risk = data.get("risk")
+    sql = """ SELECT coordinates, risk FROM location INNER JOIN infection on location.coordinates = infection.coordinates
+            GROUP BY location.coordinates HAVING infection.status = TRUE ORDER BY location.risk DESC, location.coordinates ASC"""
+    conn = None
+    try:
+        params = config()
+        conn = psycopg2.connect(**params)
+        cur = conn.cursor()
+        cur.execute(sql, (risk, coordinates))
+        conn.commit()
+        cur.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        return create_response(status=500, message=error)
+    finally:
+        if conn is not None:
+            conn.close()
+
+    return create_response(status=200, message="updated successfully")
