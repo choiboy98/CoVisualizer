@@ -97,6 +97,7 @@ class Map extends React.Component {
         routeCoordinates: [],
         pastRoutes: pastRoutes.concat([{"netid" : this.state.netid,
                                         "route" : routeCoordinates, 
+                                        "risk"  : risk_lvl,
                                         "duration" : duration.concat([new Date().getTime() - start_duration])}]),
         duration: []
       });
@@ -218,7 +219,7 @@ class Map extends React.Component {
 
   drawPath = () => {
     if (this.state.routeCoordinates.length != 0) {
-      return <Polyline coordinates={this.state.routeCoordinates} strokeWidth={5} lineJoin={"miter"} strokeColor={ "red" }/>;
+      return <Polyline coordinates={this.state.routeCoordinates} strokeWidth={5} lineJoin={"miter"} strokeColor={ "black" }/>;
     }
   }
 
@@ -236,12 +237,18 @@ class Map extends React.Component {
           <MapView ref={this.state.mapRef} provider={PROVIDER_GOOGLE} style={{ ...StyleSheet.absoluteFillObject }} initialRegion={this.getMapRegion()}
                           showsUserLocation={true} showsMyLocationButton={true} onUserLocationChange={this.followUser}>
               { this.state.pastRoutes.map((prop, id) => {
-                if (prop["netid"] != this.state.netid) {
+                if (prop["netid"] == this.state.netid) {
                   return <Polyline key={id} coordinates={prop["route"]} strokeWidth={3} lineJoin={"miter"} tappable={ true }
-                  strokeColor={ "blue" } onPress={ () => this.pressPath(id) }/>
-                } else {
+                  strokeColor={ "black" } onPress={ () => this.pressPath(id) }/>
+                } else if (prop["risk"] == 'high') {
                   return <Polyline key={id} coordinates={prop["route"]} strokeWidth={3} lineJoin={"miter"} tappable={ true }
                               strokeColor={ "red" } onPress={ () => this.pressPath(id) }/>
+                } else if (prop["risk"] == 'low') {
+                  return <Polyline key={id} coordinates={prop["route"]} strokeWidth={3} lineJoin={"miter"} tappable={ true }
+                              strokeColor={ "#50a100" } onPress={ () => this.pressPath(id) }/>
+                } else {
+                  return <Polyline key={id} coordinates={prop["route"]} strokeWidth={3} lineJoin={"miter"} tappable={ true }
+                              strokeColor={ "yellow" } onPress={ () => this.pressPath(id) }/>
                 }
               })}
               { this.drawPath() }
