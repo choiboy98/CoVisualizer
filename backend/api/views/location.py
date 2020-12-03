@@ -13,16 +13,16 @@ def get_all_location():
     get all location
     """
     # gets database values from query string, if missing is None
-    sql = """SELECT coordinates, time_spent, net_id FROM location;"""
+    sql = """SELECT coordinates, time_spent, net_id, risk FROM location;"""
     conn = None
     try:
         params = config()
         conn = psycopg2.connect(**params)
         cur = conn.cursor()
         cur.execute(sql)
-        print("here")
+        # print("here")
         items = cur.fetchall()
-        print(items)
+        # print(items)
         conn.commit()
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
@@ -40,7 +40,6 @@ def get_all_location():
             
             stored_routes = entry[0]
             stored_duration = entry[1]
-            
             stored_routes = stored_routes.split("|")
             stored_duration = stored_duration.split("|")
             for route in stored_routes:
@@ -54,6 +53,7 @@ def get_all_location():
             output["duration"] = output_dur
             output["route"] = output_route
             output["netid"] = entry[2]
+            output["risk"] = entry[3]
             result.append(output)
         return create_response(
             status=200,
