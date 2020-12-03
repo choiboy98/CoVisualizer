@@ -213,7 +213,7 @@ def risklevel(id):
         return create_response(status=400, message="No body provided for location")
 
     risk = data.get("risk")
-    sql = """ SELECT coordinates, risk FROM location INNER JOIN infection on location.coordinates = infection.coordinates
+    sql = """ SELECT coordinates, COUNT(risk) FROM location INNER JOIN infection on location.coordinates = infection.coordinates
             GROUP BY location.coordinates HAVING infection.status = TRUE ORDER BY location.risk DESC, location.coordinates ASC"""
     conn = None
     try:
